@@ -1,0 +1,30 @@
+---
+import Nav from "./Nav.astro";
+import type { PageId } from "../data/site";
+
+interface Props {
+  current: PageId | "";
+  index: string;
+  title: string;
+  words: string[];
+  ctaCurrent?: boolean;
+}
+
+const { current, index, title, words, ctaCurrent = false } = Astro.props;
+---
+
+<header class="subhero">
+  <Nav variant="solid" current={current} ctaCurrent={ctaCurrent} />
+  <div class="wrap">
+    <div class="grid subhero-grid">
+      <p class="kicker" data-animate="fill">
+        {words.map((word) => <span>{word} </span>)}
+      </p>
+      <div class="page-heading">
+        <span class="page-index">{index}</span>
+        <div class="clip" data-animate="clip"><h1>{title}</h1></div>
+      </div>
+    </div>
+    <div class="divider" data-animate="line"></div>
+  </div>
+</header>

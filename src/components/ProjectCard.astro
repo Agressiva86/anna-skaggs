@@ -1,0 +1,26 @@
+---
+interface Props {
+  title: string;
+  category: string;
+  wash: string;
+  href?: string;
+  compact?: boolean;
+}
+
+const { title, category, wash, href = "/project", compact = false } = Astro.props;
+---
+
+<a class="project" href={href}>
+  <div class="project-visual" data-animate="reveal">
+    <div class:list={["fill", wash]} data-parallax></div>
+    <div class="mock" aria-hidden="true">
+      <div class="mock-top"><span></span><span></span><span></span></div>
+      <div class="mock-nav"></div>
+      <div class="mock-block"></div>
+      {!compact && <div class="mock-lines"><span></span><span></span></div>}
+    </div>
+    <div class="project-meta"><strong>{title}</strong><span>{category}</span></div>
+    <span class="view-pill">View</span>
+    <div class="revealer"></div>
+  </div>
+</a>

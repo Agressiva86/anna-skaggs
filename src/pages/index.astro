@@ -1,0 +1,144 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
+import Arrow from "../components/Arrow.astro";
+import Swap from "../components/Swap.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { clients, projects } from "../data/site";
+
+const featured = projects.slice(0, 3);
+const frames = ["tone-a", "tone-b", "tone-c"];
+---
+
+<Layout title="Anna — Studio" bodyClass="page-home" newsletter>
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true">
+      <div class="fill" data-parallax></div>
+      <div class="hero-shade"></div>
+    </div>
+    <Nav variant="hero" current="home" />
+    <div class="hero-revealer" aria-hidden="true"></div>
+    <div class="hero-bottom">
+      <div class="wrap grid hero-grid">
+        <div class="hero-copy">
+          <h1>
+            <span class="line"><span>Careful, ambitious</span></span>
+            <span class="line"><span>digital work, made here</span></span>
+          </h1>
+          <div class="hero-actions">
+            <Swap href="/work" class="btn btn--light" label="See our work">
+              <Arrow slot="before" />
+            </Swap>
+          </div>
+        </div>
+        <div class="wordmark-clip">
+          <p class="wordmark">Anna<sup>®</sup></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main id="content">
+    <section class="section">
+      <div class="wrap">
+        <div class="divider" data-animate="line"></div>
+        <div class="grid statement-grid">
+          <p class="eyebrow statement-eyebrow" data-animate="rise">Welcome</p>
+          <h2 class="display-4 statement-title" data-animate="rise">Where craft and clear thinking meet to shape digital work that lasts. We design experiences with enough restraint to feel effortless, and enough precision to move a brand forward.</h2>
+          <div class="values" data-stagger>
+            <article class="value" data-animate="rise">
+              <h3>Innovation</h3>
+              <div>
+                <h4>Ideas with a point of view</h4>
+                <p class="muted">Strategy and making stay in the same room. The work should be sharp enough to notice, and calm enough to live with for a long time.</p>
+              </div>
+            </article>
+            <article class="value" data-animate="rise">
+              <h3>Impact</h3>
+              <div>
+                <h4>Built for the years after launch</h4>
+                <p class="muted">A site, a system, or a campaign only counts if it still earns its place later. We design for that longer life, not for a single reveal.</p>
+              </div>
+            </article>
+          </div>
+          <div class="frames" data-stagger>
+            {
+              frames.map((tone) => (
+                <div class="frame" data-animate="reveal" role="img" aria-label="Image placeholder">
+                  <div class:list={["fill", tone]} data-parallax />
+                  <div class="revealer" />
+                </div>
+              ))
+            }
+          </div>
+          <p class="curious muted" data-animate="rise">Still curious?</p>
+          <Swap href="/studio" class="text-link curious-link" label="Read more about us" animate="rise">
+            <Arrow slot="after" />
+          </Swap>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="featured-title clip" data-animate="clip"><h2 class="mega">Featured Work</h2></div>
+        <div class="divider" data-animate="line"></div>
+        <div class="grid featured-head">
+          <h3 class="display-3 featured-lead" data-animate="rise">Each project is a chance to turn a clear idea into something people can use.</h3>
+          <p class="eyebrow featured-eyebrow" data-animate="rise">Projects</p>
+        </div>
+        <div class="featured-layout">
+          <aside class="featured-aside">
+            <div class="featured-aside-inner">
+              <p data-animate="rise">Selected work is the clearest record of how we think, design, and build.</p>
+              <Swap href="/work" class="text-link" label="See all work" animate="rise">
+                <Arrow slot="after" />
+              </Swap>
+            </div>
+          </aside>
+          <div class="featured-list">
+            {featured.map((project) => <ProjectCard {...project} />)}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="divider" data-animate="line"></div>
+        <div class="grid services-grid">
+          <p class="services-label" data-animate="rise">Services</p>
+          <h2 class="display-3 services-lead" data-animate="rise">A full range, from the first question to the finished product.</h2>
+          <Swap href="/studio" class="quiet-link services-more" label="Read more" animate="rise">
+            <Arrow slot="after" />
+          </Swap>
+          <p class="services-note muted" data-animate="rise">Strategy, design, and build stay together, so the work does not lose its point along the way.</p>
+          <div class="services-list" data-stagger>
+            <a class="service" href="/studio" data-animate="rise"><i>01</i><strong>Strategy</strong></a>
+            <a class="service" href="/studio" data-animate="rise"><i>02</i><strong>Digital Design</strong></a>
+            <a class="service" href="/studio" data-animate="rise"><i>03</i><strong>Development</strong></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--flush">
+      <div class="wrap">
+        <div class="divider" data-animate="line"></div>
+        <div class="grid clients-head statement-grid">
+          <p class="eyebrow clients-eyebrow" data-animate="rise">Clients</p>
+          <h2 class="display-4 statement-title" data-animate="rise">Teams we have partnered with, from early companies to established brands. The marks themselves arrive with the content.</h2>
+        </div>
+        <div class="clients" data-stagger>
+          {
+            clients.map((index) => (
+              <div class="client" data-animate="rise">
+                <i>{index}</i><span>Logo</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

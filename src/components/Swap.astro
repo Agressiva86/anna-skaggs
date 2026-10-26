@@ -1,0 +1,25 @@
+---
+interface Props {
+  href: string;
+  label: string;
+  class?: string;
+  current?: boolean;
+  animate?: string;
+}
+
+const { href, label, class: className, current = false, animate } = Astro.props;
+---
+
+<a
+  href={href}
+  class:list={[className, "swap-link"]}
+  aria-current={current ? "page" : undefined}
+  data-animate={animate}
+>
+  <slot name="before" />
+  <span class="swap">
+    <span set:html={label} />
+    <span aria-hidden="true" set:html={label} />
+  </span>
+  <slot name="after" />
+</a>

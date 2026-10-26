@@ -1,0 +1,51 @@
+---
+import Swap from "./Swap.astro";
+import { pages } from "../data/site";
+
+interface Props {
+  newsletter?: boolean;
+  emailHref?: string;
+}
+
+const { newsletter = false, emailHref = "/contact" } = Astro.props;
+---
+
+<footer class="footer">
+  <div class="wrap">
+    {
+      newsletter && (
+        <>
+          <div class="divider" data-animate="line" />
+          <div class="grid footer-news">
+            <h2 data-animate="rise">Subscribe for the occasional studio note</h2>
+            <form class="subscribe" data-form data-animate="rise">
+              <p class="muted">Short notes on the work, sent rarely. This field is a placeholder for now.</p>
+              <div class="subscribe-row">
+                <input type="email" name="email" required placeholder="Email address" aria-label="Email address" />
+                <button class="btn btn--fill" type="submit">Sign up</button>
+              </div>
+              <p class="form-note" hidden>Thank you. The list is not connected yet.</p>
+            </form>
+          </div>
+        </>
+      )
+    }
+    <div class="divider" data-animate="line"></div>
+    <div class="grid footer-base">
+      <p class="sayhi muted">Say hi</p>
+      <div class="together">
+        <p>Let’s work together</p>
+        <Swap href={emailHref} class="text-link" label="hello@anna.studio" />
+      </div>
+      <a class="footer-logo" href="/">Anna<sup>®</sup></a>
+      <nav class="footer-nav" aria-label="Footer">
+        {
+          pages.map((page) => (
+            <Swap href={page.href} label={`<i>${page.index}</i> ${page.name}`} />
+          ))
+        }
+      </nav>
+    </div>
+    <p class="credits">Structure only. Words, photographs, and cases come next.</p>
+  </div>
+</footer>

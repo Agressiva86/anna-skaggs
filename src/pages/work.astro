@@ -1,0 +1,26 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Subhero from "../components/Subhero.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { projects } from "../data/site";
+
+const [lead, ...rest] = projects;
+---
+
+<Layout title="Work — Anna" bodyClass="page-work">
+  <Subhero
+    current="work"
+    index="02"
+    title="Work"
+    words={["Recent", "projects", "where", "a", "clear", "idea", "became", "something", "real"]}
+  />
+  <main id="content" class="section section--tight">
+    <div class="wrap grid work-intro">
+      <p class="intro muted" data-animate="rise">A place for the cases. Each card is a slot for a project, a category, and a preview.</p>
+      {lead && <ProjectCard {...lead} />}
+    </div>
+    <div class="wrap work-grid">
+      {rest.map((project) => <ProjectCard {...project} compact />)}
+    </div>
+  </main>
+</Layout>

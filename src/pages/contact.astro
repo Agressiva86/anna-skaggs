@@ -1,0 +1,29 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Subhero from "../components/Subhero.astro";
+---
+
+<Layout title="Contact — Anna" emailHref="mailto:hello@anna.studio">
+  <Subhero
+    current=""
+    ctaCurrent
+    index="05"
+    title="Contact"
+    words={["Tell", "us", "about", "the", "project.", "We", "read", "every", "note."]}
+  />
+  <main id="content" class="section section--tight">
+    <div class="wrap grid contact-grid">
+      <div class="contact-copy" data-animate="rise">
+        <h2>Let’s work together</h2>
+        <p class="muted">The form stays on the page for now. Nothing is sent until the content and the address are in place.</p>
+      </div>
+      <form class="contact-form" data-form data-animate="rise">
+        <div class="field"><label for="name">Name</label><input id="name" name="name" type="text" required /></div>
+        <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" required /></div>
+        <div class="field"><label for="about">About the project</label><textarea id="about" name="about" required></textarea></div>
+        <button class="btn btn--fill" type="submit">Send</button>
+        <p class="form-note" hidden>Received. This is only a preview of the form.</p>
+      </form>
+    </div>
+  </main>
+</Layout>

@@ -1,0 +1,13 @@
+---
+import { pages } from "../data/site";
+---
+
+<div class="menu">
+  {
+    pages.map((page) => (
+      <a href={page.href}>
+        <i>{page.index}</i> {page.name}
+      </a>
+    ))
+  }
+</div>

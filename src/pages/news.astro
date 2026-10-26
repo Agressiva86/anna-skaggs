@@ -1,0 +1,37 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Subhero from "../components/Subhero.astro";
+import Arrow from "../components/Arrow.astro";
+
+const notes = [
+  { index: "01", title: "A short piece on pacing" },
+  { index: "02", title: "Type, space, and silence" },
+  { index: "03", title: "What we look for in a brief" },
+  { index: "04", title: "After the launch" },
+];
+---
+
+<Layout title="News — Anna">
+  <Subhero
+    current="news"
+    index="04"
+    title="News"
+    words={["Notes", "on", "process,", "type,", "and", "the", "work", "in", "between"]}
+  />
+  <main id="content" class="section section--tight">
+    <div class="wrap">
+      <div class="news-list" data-stagger>
+        {
+          notes.map((note) => (
+            <a class="news-row" href="/news" data-animate="rise">
+              <i>{note.index}</i>
+              <em>Note</em>
+              <strong>{note.title}</strong>
+              <Arrow />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </main>
+</Layout>

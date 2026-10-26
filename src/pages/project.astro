@@ -1,0 +1,33 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Subhero from "../components/Subhero.astro";
+import Arrow from "../components/Arrow.astro";
+import Swap from "../components/Swap.astro";
+---
+
+<Layout title="Project — Anna">
+  <Subhero
+    current="work"
+    index="01"
+    title="Northline"
+    words={["Case", "study", "slot.", "The", "story,", "the", "stills,", "and", "the", "outcome", "go", "here."]}
+  />
+  <main id="content" class="section section--tight">
+    <div class="wrap">
+      <div class="media story-visual" data-animate="reveal" role="img" aria-label="Image placeholder">
+        <div class="fill wash-a" data-parallax></div>
+        <div class="revealer"></div>
+      </div>
+      <div class="grid">
+        <p class="story-label muted" data-animate="rise">Website</p>
+        <div class="story">
+          <p class="display-3" data-animate="rise">A single project page, ready for the real case when the content arrives.</p>
+          <p class="muted" data-animate="rise">Use this layout for the brief, the approach, and the result. The next link keeps the sequence moving.</p>
+          <Swap href="/work" class="text-link" label="All work" animate="rise">
+            <Arrow slot="after" />
+          </Swap>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>

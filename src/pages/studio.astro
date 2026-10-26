@@ -1,0 +1,50 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Subhero from "../components/Subhero.astro";
+
+const frames = ["tone-b", "tone-a", "tone-c"];
+const roles = [
+  { index: "01", title: "Direction" },
+  { index: "02", title: "Design" },
+  { index: "03", title: "Build" },
+];
+---
+
+<Layout title="Studio — Anna">
+  <Subhero
+    current="studio"
+    index="03"
+    title="Studio"
+    words={["A", "small", "studio", "for", "digital", "work", "with", "a", "longer", "life"]}
+  />
+  <main id="content" class="section section--tight">
+    <div class="wrap grid">
+      <p class="intro muted" data-animate="rise">The about page. Portrait, point of view, and the people slots live here.</p>
+      <div class="studio-copy" data-stagger>
+        <p class="display-3" data-animate="rise">We keep the team close to the work, from the first question through to launch.</p>
+        <p class="muted" data-animate="rise">This block is ready for a real studio story. The columns, the image row, and the role cards are the structure underneath it.</p>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="frames" data-stagger style="margin-top: 72px">
+        {
+          frames.map((tone) => (
+            <div class="frame" data-animate="reveal" role="img" aria-label="Image placeholder">
+              <div class:list={["fill", tone]} data-parallax />
+              <div class="revealer" />
+            </div>
+          ))
+        }
+      </div>
+      <div class="roles" data-stagger>
+        {
+          roles.map((role) => (
+            <article class="role" data-animate="rise">
+              <i>{role.index}</i><strong>{role.title}</strong><span class="muted">Role</span>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </main>
+</Layout>
