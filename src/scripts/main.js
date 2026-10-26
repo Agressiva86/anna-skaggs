@@ -1,3 +1,6 @@
+import { initMosaicCurl } from "./mosaic-curl.js";
+import { initSmoothScroll } from "./smooth-scroll.js";
+
 const root = document.documentElement;
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -69,6 +72,131 @@ if (toggle) {
     toggle.setAttribute("aria-expanded", String(open));
     toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
   });
+}
+
+initSmoothScroll(reduce);
+initMosaicCurl(reduce);
+
+const finePointer = window.matchMedia("(pointer: fine)").matches;
+if (!reduce && finePointer) {
+  root.classList.add("has-cursor");
+  const cursor = document.createElement("div");
+  cursor.className = "cursor";
+  cursor.setAttribute("aria-hidden", "true");
+  const label = document.createElement("span");
+  label.className = "cursor__label";
+  label.textContent = "View";
+  cursor.appendChild(label);
+  document.body.appendChild(cursor);
+
+  let x = window.innerWidth / 2;
+  let y = window.innerHeight / 2;
+  let targetX = x;
+  let targetY = y;
+  let frame = 0;
+  let last = 0;
+
+  const place = (now) => {
+    frame = 0;
+    const dt = Math.min(48, Math.max(1, now - (last || now)));
+    last = now;
+    x += (targetX - x) * (1 - Math.exp(-dt / 70));
+    y += (targetY - y) * (1 - Math.exp(-dt / 70));
+    cursor.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+    if (Math.hypot(targetX - x, targetY - y) > 0.3) {
+      frame = requestAnimationFrame(place);
+    }
+  };
+
+  const follow = () => {
+    if (!frame) frame = requestAnimationFrame(place);
+  };
+
+  window.addEventListener("pointermove", (event) => {
+    targetX = event.clientX;
+    targetY = event.clientY;
+    const under = event.target instanceof Element ? event.target.closest(".mosaic-shot, .frame.hover-shot, .project") : null;
+    cursor.classList.toggle("is-view", Boolean(under));
+    cursor.classList.add("is-on");
+    follow();
+  }, { passive: true });
+
+  document.addEventListener("pointerout", (event) => {
+    if (event.relatedTarget) return;
+    cursor.classList.remove("is-on", "is-view");
+  });
+}
+
+const serviceItems = [...document.querySelectorAll(".services__item")];
+if (serviceItems.length && !reduce && "IntersectionObserver" in window) {
+  const reveal = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-in");
+        reveal.unobserve(entry.target);
+      });
+    },
+    { rootMargin: "0px 0px -8% 0px", threshold: 0 },
+  );
+
+  const active = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        entry.target.classList.toggle("is-active", entry.isIntersecting);
+      });
+    },
+    { rootMargin: "-49% 0px -49% 0px", threshold: 0 },
+  );
+
+  serviceItems.forEach((item) => {
+    reveal.observe(item);
+    active.observe(item);
+  });
+} else {
+  serviceItems.forEach((item) => item.classList.add("is-in", "is-active"));
+}
+
+const heroMore = document.querySelector(".hero-more");
+const hero = document.querySelector(".hero-mosaic");
+if (heroMore && hero) {
+  const placeHeroMore = () => {
+    const bottom = hero.getBoundingClientRect().bottom;
+    heroMore.classList.toggle("is-gone", bottom < window.innerHeight - 8);
+  };
+  placeHeroMore();
+  window.addEventListener("scroll", placeHeroMore, { passive: true });
+  window.addEventListener("resize", placeHeroMore);
+}
+
+const header = document.querySelector(".mosaic-nav .nav");
+if (header) {
+  let lastY = window.scrollY;
+  let hidden = false;
+
+  const setHidden = (next) => {
+    if (next === hidden) return;
+    hidden = next;
+    header.classList.toggle("nav--hidden", next);
+  };
+
+  header.addEventListener("focusin", () => setHidden(false));
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      const y = window.scrollY;
+      const delta = y - lastY;
+      lastY = y;
+      if (document.body.classList.contains("menu-open") || y < 16) {
+        setHidden(false);
+        return;
+      }
+      if (Math.abs(delta) < 3) return;
+      setHidden(delta > 0);
+    },
+    { passive: true },
+  );
 }
 
 document.querySelectorAll("[data-form]").forEach((form) => {

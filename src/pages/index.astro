@@ -7,35 +7,65 @@ import ProjectCard from "../components/ProjectCard.astro";
 import { clients, projects } from "../data/site";
 
 const featured = projects.slice(0, 3);
-const frames = ["tone-a", "tone-b", "tone-c"];
+const services = [
+  {
+    title: "Strategic Brand & Business Audit",
+    text: "Diagnosing where your brand, offer and communication lose clarity, value and growth potential.",
+  },
+  {
+    title: "Workshops for CEOs and Teams",
+    text: "Helping leadership teams align around direction, priorities and better decisions.",
+  },
+  {
+    title: "Creative Direction & Offer Architecture",
+    text: "Building stronger collection logic and clearer presentation of value.",
+  },
+  {
+    title: "Foresight for Furniture & Home",
+    text: "Turning signals of change into strategic direction for today.",
+  },
+  {
+    title: "Advisory for Growth and Transformation",
+    text: "Providing ongoing support for brands navigating change, repositioning and growth.",
+  },
+];
+const shots = [
+  { start: 7, cols: 5, top: 0, ratio: 1.15, mStart: 3, mCols: 5, mTop: 0, mRatio: 1.1 },
+  { start: 12, cols: 4, top: 19, ratio: 1.25, mStart: 1, mCols: 4, mTop: 29, mRatio: 1.3 },
+  { start: 1, cols: 4, top: 38, ratio: 1.45, mStart: 4, mCols: 4, mTop: 64, mRatio: 1.35 },
+  { start: 5, cols: 5, top: 75, ratio: 1.15, mStart: 1, mCols: 5, mTop: 104, mRatio: 1.15 },
+  { start: 12, cols: 4, top: 102, ratio: 1.4, mStart: 4, mCols: 4, mTop: 149, mRatio: 1.25 },
+  { start: 1, cols: 5, top: 139, ratio: 0.85, mStart: 1, mCols: 5, mTop: 192, mRatio: 0.8 },
+  { start: 7, cols: 6, top: 177, ratio: 0.72, mStart: 2, mCols: 6, mTop: 240, mRatio: 0.75 },
+  { start: 2, cols: 5, top: 222, ratio: 1.3, mStart: 1, mCols: 4, mTop: 296, mRatio: 1.3 },
+];
 ---
 
 <Layout title="Anna — Studio" bodyClass="page-home" newsletter>
-  <section class="hero">
-    <div class="hero-bg" aria-hidden="true">
-      <div class="fill" data-parallax></div>
-      <div class="hero-shade"></div>
+  <section class="hero hero-mosaic" aria-label="Selected work">
+    <div class="mosaic-nav">
+      <Nav variant="hero" current="home" />
     </div>
-    <Nav variant="hero" current="home" />
-    <div class="hero-revealer" aria-hidden="true"></div>
-    <div class="hero-bottom">
-      <div class="wrap grid hero-grid">
-        <div class="hero-copy">
-          <h1>
-            <span class="line"><span>Careful, ambitious</span></span>
-            <span class="line"><span>digital work, made here</span></span>
-          </h1>
-          <div class="hero-actions">
-            <Swap href="/work" class="btn btn--light" label="See our work">
-              <Arrow slot="before" />
-            </Swap>
-          </div>
-        </div>
-        <div class="wordmark-clip">
-          <p class="wordmark">Anna<sup>®</sup></p>
-        </div>
-      </div>
+    <h1 class="visually-hidden">Anna</h1>
+    <div class="mosaic-field">
+      {
+        shots.map((shot) => (
+          <a
+            class="mosaic-shot hover-shot"
+            href="/work"
+            style={`--start:${shot.start};--cols:${shot.cols};--top:${shot.top};--ratio:${shot.ratio};--m-start:${shot.mStart};--m-cols:${shot.mCols};--m-top:${shot.mTop};--m-ratio:${shot.mRatio}`}
+          >
+            <img class="mosaic-shot__fill" src="/images/gallery-placeholder.png" alt="" />
+            <img class="mosaic-shot__hover" src="/images/hero-hover.png" alt="" />
+            <span class="shot-title">Lorem ipsum</span>
+          </a>
+        ))
+      }
     </div>
+    <a class="hero-more" href="#content">
+      Learn more about us
+      <Arrow />
+    </a>
   </section>
 
   <main id="content">
@@ -63,15 +93,17 @@ const frames = ["tone-a", "tone-b", "tone-c"];
           </div>
           <div class="frames" data-stagger>
             {
-              frames.map((tone) => (
-                <div class="frame" data-animate="reveal" role="img" aria-label="Image placeholder">
-                  <div class:list={["fill", tone]} data-parallax />
+              Array.from({ length: 3 }).map(() => (
+                <div class="frame hover-shot" data-animate="reveal">
+                  <img class="mosaic-shot__fill" src="/images/gallery-placeholder.png" alt="" />
+                  <img class="mosaic-shot__hover" src="/images/hero-hover.png" alt="" />
+                  <span class="shot-title">Lorem ipsum</span>
                   <div class="revealer" />
                 </div>
               ))
             }
           </div>
-          <p class="curious muted" data-animate="rise">Still curious?</p>
+          <p class="curious" data-animate="rise">Still curious?</p>
           <Swap href="/studio" class="text-link curious-link" label="Read more about us" animate="rise">
             <Arrow slot="after" />
           </Swap>
@@ -103,22 +135,19 @@ const frames = ["tone-a", "tone-b", "tone-c"];
       </div>
     </section>
 
-    <section class="section">
+    <section class="section services" id="services" aria-labelledby="services-label">
       <div class="wrap">
-        <div class="divider" data-animate="line"></div>
-        <div class="grid services-grid">
-          <p class="services-label" data-animate="rise">Services</p>
-          <h2 class="display-3 services-lead" data-animate="rise">A full range, from the first question to the finished product.</h2>
-          <Swap href="/studio" class="quiet-link services-more" label="Read more" animate="rise">
-            <Arrow slot="after" />
-          </Swap>
-          <p class="services-note muted" data-animate="rise">Strategy, design, and build stay together, so the work does not lose its point along the way.</p>
-          <div class="services-list" data-stagger>
-            <a class="service" href="/studio" data-animate="rise"><i>01</i><strong>Strategy</strong></a>
-            <a class="service" href="/studio" data-animate="rise"><i>02</i><strong>Digital Design</strong></a>
-            <a class="service" href="/studio" data-animate="rise"><i>03</i><strong>Development</strong></a>
-          </div>
-        </div>
+        <p class="services__label" id="services-label">Ways I Can Help</p>
+        <ul class="services__list">
+          {
+            services.map((service) => (
+              <li class="services__item">
+                <h2 class="services__name">{service.title}</h2>
+                <p class="services__meta">{service.text}</p>
+              </li>
+            ))
+          }
+        </ul>
       </div>
     </section>
 

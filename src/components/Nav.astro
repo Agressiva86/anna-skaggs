@@ -14,7 +14,9 @@ const primary = pages.filter((page) => page.id !== "contact");
 ---
 
 <div class:list={["nav", variant === "solid" && "nav--solid"]}>
-  <a class="logo" href="/">Anna<sup>®</sup></a>
+  <a class="logo" href="/">
+    <img src="/images/logo.svg" alt="Creative Future Studio" width="385" height="139" />
+  </a>
   <nav class="nav-links" aria-label="Primary">
     {
       primary.map((page) => (
