@@ -1,26 +1,24 @@
 @font-face {
-  font-family: "Instrument Sans";
+  font-family: "Host Grotesk";
   font-style: normal;
-  font-weight: 400 700;
-  font-stretch: 100%;
+  font-weight: 300 400;
   font-display: block;
-  src: url("/fonts/instrument-sans-ext.woff2") format("woff2");
+  src: url("/fonts/host-grotesk-ext.woff2") format("woff2");
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 @font-face {
-  font-family: "Instrument Sans";
+  font-family: "Host Grotesk";
   font-style: normal;
-  font-weight: 400 700;
-  font-stretch: 100%;
+  font-weight: 300 400;
   font-display: block;
-  src: url("/fonts/instrument-sans.woff2") format("woff2");
+  src: url("/fonts/host-grotesk.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 :root {
   --ink: #131211;
-  --accent: #9c532e;
+  --accent: #8c2f39;
   --muted: #cdcbc5;
   --faint: #cdcbc5;
   --silver: #cdcbc5;
@@ -54,11 +52,20 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: "Instrument Sans", sans-serif;
+  font-family: "Host Grotesk", sans-serif;
   font-size: clamp(16px, 1.2vw, 23px);
-  font-weight: 400;
+  font-weight: 300;
   line-height: 1.35;
   letter-spacing: -0.02em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 400;
 }
 
 img,
@@ -129,9 +136,20 @@ button {
 
 .divider {
   height: 1px;
+  margin-block: 100px;
   background: var(--line);
   border: 0;
   transform-origin: left center;
+}
+
+.section:has(> .wrap > .divider:first-child),
+.footer:has(> .wrap > .divider:first-child) {
+  padding-top: 0;
+}
+
+.section:has(+ .section > .wrap > .divider:first-child),
+.section:has(+ .footer > .wrap > .divider:first-child) {
+  padding-bottom: 0;
 }
 
 .eyebrow,
@@ -153,7 +171,6 @@ button {
 .display-3 {
   margin: 0;
   font-size: clamp(32px, 3.2vw, 61px);
-  font-weight: 500;
   line-height: 1.02;
   letter-spacing: -0.03em;
 }
@@ -161,7 +178,7 @@ button {
 .display-4 {
   margin: 0;
   font-size: clamp(34px, 3.75vw, 72px);
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.02;
   letter-spacing: -0.035em;
 }
@@ -169,7 +186,7 @@ button {
 .mega {
   margin: 0;
   font-size: clamp(64px, 12vw, 220px);
-  font-weight: 500;
+  font-weight: 400;
   line-height: 0.82;
   letter-spacing: -0.045em;
 }
@@ -225,7 +242,7 @@ button {
   border: 1px solid transparent;
   border-radius: 6px;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 300;
   line-height: 1;
   transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease;
 }
@@ -271,7 +288,7 @@ button {
   gap: 12px;
   color: inherit;
   font-size: clamp(32px, 2.65vw, 51px);
-  font-weight: 500;
+  font-weight: 300;
   letter-spacing: -0.03em;
   line-height: 1;
   text-decoration: none;
@@ -301,7 +318,7 @@ button {
   justify-self: start;
   color: inherit;
   font-size: clamp(28px, 2vw, 36px);
-  font-weight: 500;
+  font-weight: 300;
   letter-spacing: -0.04em;
   line-height: 1;
   text-decoration: none;
@@ -377,7 +394,7 @@ button {
 .client i,
 .news-row i {
   font-style: normal;
-  font-weight: 700;
+  font-weight: 300;
   font-size: 10px;
   letter-spacing: 0;
   line-height: 0;
@@ -441,7 +458,7 @@ button {
 .menu a {
   color: inherit;
   font-size: clamp(42px, 8vw, 76px);
-  font-weight: 500;
+  font-weight: 300;
   letter-spacing: -0.045em;
   line-height: 0.95;
   text-decoration: none;
@@ -534,7 +551,7 @@ button {
 .hero h1 {
   margin: 0;
   font-size: clamp(40px, 4.25vw, 82px);
-  font-weight: 500;
+  font-weight: 400;
   line-height: 0.96;
   letter-spacing: -0.03em;
 }
@@ -560,7 +577,7 @@ button {
 .wordmark {
   margin: 0 -0.08em 0 0;
   font-size: clamp(112px, 20vw, 390px);
-  font-weight: 500;
+  font-weight: 400;
   line-height: 0.76;
   letter-spacing: -0.055em;
   text-align: right;
@@ -646,14 +663,14 @@ button {
 .value h3 {
   margin: 0;
   font-size: clamp(22px, 1.85vw, 36px);
-  font-weight: 500;
+  font-weight: 400;
   text-align: center;
 }
 
 .value h4 {
   margin: 0 0 12px;
   font-size: 1em;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .value p,
@@ -703,11 +720,11 @@ button {
 }
 
 .featured-title {
-  margin-bottom: 18px;
+  margin-bottom: 0;
 }
 
 .featured-head {
-  margin-top: clamp(56px, 6vw, 100px);
+  margin-top: 0;
 }
 
 .featured-lead {
@@ -763,7 +780,7 @@ button {
 .project-meta strong {
   display: block;
   font-size: clamp(24px, 1.7vw, 32px);
-  font-weight: 500;
+  font-weight: 300;
   letter-spacing: -0.03em;
 }
 
@@ -844,7 +861,7 @@ button {
   background: var(--accent);
   color: var(--paper);
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 300;
   opacity: 0;
   transform: translate(-50%, -40%);
   transition: opacity 0.35s ease, transform 0.45s var(--ease);
@@ -856,8 +873,45 @@ button {
   transform: translate(-50%, -50%);
 }
 
+.services {
+  --services-gutter: 40px;
+  position: relative;
+  margin-inline: var(--services-gutter);
+  background: transparent;
+  color: var(--paper);
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
+
+.services__surface {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--services-gutter) * -1);
+  right: calc(var(--services-gutter) * -1);
+  z-index: 0;
+  background: var(--accent);
+  clip-path: inset(0 var(--services-gutter));
+  pointer-events: none;
+}
+
+.services > .wrap {
+  position: relative;
+  z-index: 1;
+}
+
+.services + .section {
+  padding-top: 100px;
+}
+
+.services ::selection {
+  background: var(--paper);
+  color: var(--accent);
+}
+
 .services__label {
   margin: 0 0 clamp(32px, 5vh, 56px);
+  color: var(--paper);
 }
 
 .services__list {
@@ -867,21 +921,21 @@ button {
 }
 
 .services__item {
-  padding: clamp(18px, 2.4vh, 28px) 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  padding: clamp(56px, 7vh, 96px) 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--paper) 35%, transparent);
 }
 
 .services__item:first-child {
-  border-top: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--paper) 35%, transparent);
 }
 
 .services__name {
   margin: 0;
   font-size: clamp(36px, 5.6vw, 84px);
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.02;
   letter-spacing: -0.03em;
-  color: var(--muted);
+  color: color-mix(in srgb, var(--paper) 78%, var(--accent));
   transition: color 0.4s var(--ease), transform 0.55s var(--ease);
 }
 
@@ -890,7 +944,7 @@ button {
   margin: 12px 0 0;
   font-size: clamp(16px, 1.25vw, 20px);
   line-height: 1.45;
-  color: var(--accent);
+  color: var(--paper);
   opacity: 0;
   transform: translateY(6px);
   transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
@@ -908,7 +962,7 @@ button {
 }
 
 .services__item.is-active .services__name {
-  color: var(--accent);
+  color: var(--paper);
   transform: translateX(clamp(8px, 2vw, 32px));
 }
 
@@ -954,7 +1008,7 @@ button {
   color: var(--muted);
   transition: color 0.35s ease;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 300;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -968,11 +1022,20 @@ button {
   padding: clamp(48px, 5vw, 80px) 0;
 }
 
+.wrap > .divider + .footer-news,
+.wrap > .divider + .footer-base {
+  padding-top: 0;
+}
+
+.footer-news:has(+ .divider) {
+  padding-bottom: 0;
+}
+
 .footer-news h2 {
   grid-column: 1 / 5;
   margin: 0;
   font-size: clamp(28px, 1.9vw, 36px);
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.15;
   letter-spacing: -0.03em;
 }
@@ -1037,7 +1100,7 @@ button {
   margin: 0 0 10px;
   color: var(--silver);
   font-size: clamp(32px, 3.2vw, 61px);
-  font-weight: 500;
+  font-weight: 300;
   line-height: 1;
   letter-spacing: -0.035em;
 }
@@ -1064,14 +1127,14 @@ button {
 
 .subhero-grid {
   row-gap: clamp(48px, 6vw, 96px);
-  padding: clamp(36px, 4vw, 64px) 0 10px;
+  padding: clamp(36px, 4vw, 64px) 0 0;
 }
 
 .kicker {
   grid-column: 7 / 13;
   margin: 0;
   font-size: clamp(28px, 2.65vw, 51px);
-  font-weight: 500;
+  font-weight: 300;
   line-height: 1.12;
   letter-spacing: -0.03em;
 }
@@ -1092,13 +1155,13 @@ button {
 .page-heading h1 {
   margin: 0;
   font-size: clamp(78px, 12vw, 230px);
-  font-weight: 500;
+  font-weight: 400;
   line-height: 0.82;
   letter-spacing: -0.045em;
 }
 
-.subhero .divider {
-  margin-top: 8px;
+.subhero + .section {
+  padding-top: 0;
 }
 
 .work-intro {
@@ -1150,7 +1213,7 @@ button {
 .role i,
 .menu i {
   font-style: normal;
-  font-weight: 700;
+  font-weight: 300;
   font-size: 13px;
   letter-spacing: 0;
   color: var(--faint);
@@ -1161,7 +1224,7 @@ button {
 
 .role strong {
   font-size: clamp(28px, 2.4vw, 42px);
-  font-weight: 500;
+  font-weight: 300;
   letter-spacing: -0.03em;
 }
 
@@ -1186,7 +1249,7 @@ button {
 
 .news-row strong {
   font-size: clamp(28px, 2.6vw, 44px);
-  font-weight: 500;
+  font-weight: 300;
   letter-spacing: -0.035em;
   transition: transform 0.5s var(--ease), color 0.35s ease;
 }
@@ -1212,7 +1275,7 @@ button {
 .contact-copy h2 {
   margin: 0 0 16px;
   font-size: clamp(36px, 3.4vw, 61px);
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: -0.035em;
   line-height: 0.98;
 }
@@ -1343,10 +1406,7 @@ button {
 
 .js [data-animate="line"] {
   transform: scaleX(0);
-}
-
-.js [data-animate="line"].in {
-  transform: scaleX(1);
+  transition: none;
 }
 
 .js [data-animate="reveal"] .revealer {
@@ -1374,6 +1434,10 @@ button {
 }
 
 @media (max-width: 980px) {
+  .services {
+    --services-gutter: 20px;
+  }
+
   .nav {
     grid-template-columns: 1fr auto;
   }
@@ -1541,7 +1605,7 @@ button {
   }
 
   .services__name {
-    color: var(--accent) !important;
+    color: var(--paper) !important;
     transform: none !important;
   }
 }
@@ -1753,7 +1817,7 @@ button {
 
 .cursor__label {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 300;
   line-height: 1;
   letter-spacing: 0;
   opacity: 0;

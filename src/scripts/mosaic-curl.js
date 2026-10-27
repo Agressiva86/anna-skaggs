@@ -354,3 +354,80 @@ export function initMosaicCurl(reduce) {
     field.classList.remove("is-curling");
   });
 }
+
+export function initSectionEdgeCurl(selector, reduce) {
+  const surface = document.querySelector(selector);
+  if (!surface || reduce) return;
+
+  const steps = 18;
+  let frame = 0;
+  let curl = 0;
+  let speed = 0;
+  let lastY = window.scrollY;
+  let lastScrollAt = 0;
+  let lastFrame = performance.now();
+
+  const inset = (screenY, amount, view) => {
+    const centered = Math.min(1, Math.max(-1, (screenY / view) * 2 - 1));
+    const edge = 1 - Math.sqrt(Math.max(0, 1 - centered * centered));
+    return edge * amount * 0.5;
+  };
+
+  const apply = (amount) => {
+    if (amount < 0.002) {
+      surface.style.clipPath = "";
+      return;
+    }
+    const rect = surface.getBoundingClientRect();
+    const view = window.innerHeight || 1;
+    if (rect.bottom < 0 || rect.top > view || rect.width < 2) {
+      surface.style.clipPath = "";
+      return;
+    }
+    const gutter = Math.max(0, surface.parentElement.getBoundingClientRect().left - rect.left);
+    const span = rect.width;
+    const right = [];
+    const left = [];
+    for (let i = 0; i <= steps; i += 1) {
+      const screenY = rect.top + (rect.height * i) / steps;
+      const bulge = Math.min(gutter, inset(screenY, amount, view) / 0.08 * gutter);
+      const y = (i / steps) * 100;
+      right.push(`${((gutter + (span - gutter * 2) + bulge) / span) * 100}% ${y}%`);
+      left.push(`${((gutter - bulge) / span) * 100}% ${y}%`);
+    }
+    left.reverse();
+    surface.style.clipPath = `polygon(${right.concat(left).join(",")})`;
+  };
+
+  const render = (now) => {
+    const dt = Math.min(48, Math.max(1, now - lastFrame));
+    lastFrame = now;
+    if (now - lastScrollAt > 70) speed += (0 - speed) * (1 - Math.exp(-dt / 120));
+    const target = Math.min(speed / 1600, 1);
+    curl += (target - curl) * (1 - Math.exp(-dt / 180));
+    apply(0.16 * curl);
+    if (curl > 0.003 || speed > 8) requestDraw();
+  };
+
+  const requestDraw = () => {
+    if (frame) return;
+    frame = requestAnimationFrame((now) => {
+      frame = 0;
+      render(now);
+    });
+  };
+
+  window.addEventListener("scroll", () => {
+    const now = performance.now();
+    const y = window.scrollY;
+    const dt = lastScrollAt ? Math.max(1, now - lastScrollAt) : 16;
+    const instant = (Math.abs(y - lastY) / dt) * 1000;
+    if (instant < Math.max(window.innerHeight * 2, 1600)) {
+      speed += (instant - speed) * 0.45;
+    }
+    lastY = y;
+    lastScrollAt = now;
+    render(now);
+  }, { passive: true });
+  window.addEventListener("resize", requestDraw);
+}

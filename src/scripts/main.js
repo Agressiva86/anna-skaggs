@@ -1,4 +1,4 @@
-import { initMosaicCurl } from "./mosaic-curl.js";
+import { initMosaicCurl, initSectionEdgeCurl } from "./mosaic-curl.js";
 import { initSmoothScroll } from "./smooth-scroll.js";
 
 const root = document.documentElement;
@@ -20,7 +20,32 @@ document.querySelectorAll('[data-animate="fill"]').forEach((line) => {
   });
 });
 
-const animated = document.querySelectorAll("[data-animate]");
+const animated = document.querySelectorAll('[data-animate]:not([data-animate="line"])');
+
+const lines = reduce ? [] : [...document.querySelectorAll('[data-animate="line"]')];
+let lineFrame = 0;
+
+function updateLines() {
+  lineFrame = 0;
+  const view = window.innerHeight || 1;
+  const travel = Math.min(320, view * 0.36);
+  const start = view - 24;
+  lines.forEach((line) => {
+    const top = line.getBoundingClientRect().top;
+    const progress = Math.max(0, Math.min(1, (start - top) / travel));
+    line.style.transform = `scaleX(${progress})`;
+  });
+}
+
+if (lines.length) {
+  const requestLines = () => {
+    if (lineFrame) return;
+    lineFrame = requestAnimationFrame(updateLines);
+  };
+  window.addEventListener("scroll", requestLines, { passive: true });
+  window.addEventListener("resize", requestLines);
+  updateLines();
+}
 
 if (reduce || !("IntersectionObserver" in window)) {
   animated.forEach((item) => item.classList.add("in"));
@@ -76,6 +101,7 @@ if (toggle) {
 
 initSmoothScroll(reduce);
 initMosaicCurl(reduce);
+initSectionEdgeCurl(".services__surface", reduce);
 
 const finePointer = window.matchMedia("(pointer: fine)").matches;
 if (!reduce && finePointer) {
