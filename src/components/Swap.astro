@@ -5,9 +5,11 @@ interface Props {
   class?: string;
   current?: boolean;
   animate?: string;
+  target?: string;
+  rel?: string;
 }
 
-const { href, label, class: className, current = false, animate } = Astro.props;
+const { href, label, class: className, current = false, animate, target, rel } = Astro.props;
 ---
 
 <a
@@ -15,6 +17,8 @@ const { href, label, class: className, current = false, animate } = Astro.props;
   class:list={[className, "swap-link"]}
   aria-current={current ? "page" : undefined}
   data-animate={animate}
+  target={target}
+  rel={rel}
 >
   <slot name="before" />
   <span class="swap">

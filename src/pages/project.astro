@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import Subhero from "../components/Subhero.astro";
 import Arrow from "../components/Arrow.astro";
 import Swap from "../components/Swap.astro";
+import { withBase } from "../lib/url";
 ---
 
 <Layout title="Project — Anna">
@@ -23,7 +24,7 @@ import Swap from "../components/Swap.astro";
         <div class="story">
           <p class="display-3" data-animate="rise">A single project page, ready for the real case when the content arrives.</p>
           <p class="muted" data-animate="rise">Use this layout for the brief, the approach, and the result. The next link keeps the sequence moving.</p>
-          <Swap href="/work" class="text-link" label="All work" animate="rise">
+          <Swap href={withBase("/work")} class="text-link" label="All work" animate="rise">
             <Arrow slot="after" />
           </Swap>
         </div>

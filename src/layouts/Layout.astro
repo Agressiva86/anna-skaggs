@@ -2,15 +2,14 @@
 import "../styles/global.css";
 import Menu from "../components/Menu.astro";
 import Footer from "../components/Footer.astro";
+import { withBase } from "../lib/url";
 
 interface Props {
   title: string;
   bodyClass?: string;
-  newsletter?: boolean;
-  emailHref?: string;
 }
 
-const { title, bodyClass, newsletter = false, emailHref = "/contact" } = Astro.props;
+const { title, bodyClass } = Astro.props;
 ---
 
 <!doctype html>
@@ -19,15 +18,27 @@ const { title, bodyClass, newsletter = false, emailHref = "/contact" } = Astro.p
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
-    <link rel="preload" href="/fonts/host-grotesk.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/host-grotesk-ext.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={withBase("/fonts/garvox-regular.woff2")} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={withBase("/fonts/host-grotesk.woff2")} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={withBase("/fonts/host-grotesk-ext.woff2")} as="font" type="font/woff2" crossorigin />
     <script is:inline>document.documentElement.classList.add("js");</script>
   </head>
   <body class={bodyClass}>
+    <svg class="svg-defs" aria-hidden="true" focusable="false">
+      <filter id="client-mono" color-interpolation-filters="sRGB">
+        <feColorMatrix
+          type="matrix"
+          values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"
+          result="gray"
+        />
+        <feFlood flood-color="#efeeeb" result="paper" />
+        <feBlend in="gray" in2="paper" mode="multiply" />
+      </filter>
+    </svg>
     <a class="skip" href="#content">Skip to content</a>
     <Menu />
     <slot />
-    <Footer newsletter={newsletter} emailHref={emailHref} />
+    <Footer />
     <script>
       import "../scripts/main.js";
     </script>

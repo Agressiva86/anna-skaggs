@@ -1,7 +1,8 @@
 ---
 import Arrow from "./Arrow.astro";
 import Swap from "./Swap.astro";
-import { pages, type PageId } from "../data/site";
+import { navLinks, type PageId } from "../data/site";
+import { withBase } from "../lib/url";
 
 interface Props {
   variant?: "hero" | "solid";
@@ -10,32 +11,33 @@ interface Props {
 }
 
 const { variant = "solid", current = "", ctaCurrent = false } = Astro.props;
-const primary = pages.filter((page) => page.id !== "contact");
 ---
 
 <div class:list={["nav", variant === "solid" && "nav--solid"]}>
-  <a class="logo" href="/">
-    <img src="/images/logo.svg" alt="Creative Future Studio" width="385" height="139" />
+  <a class="logo" href={withBase("/")} aria-label="Creative Future Studio">
+    <span>creative</span>
+    <span>future</span>
+    <span>studio</span>
   </a>
   <nav class="nav-links" aria-label="Primary">
     {
-      primary.map((page) => (
+      navLinks.map((link) => (
         <Swap
-          href={page.href}
+          href={link.href}
           class="nav-link"
-          label={`<i>${page.index}</i> ${page.name}`}
-          current={current === page.id}
+          label={link.label}
+          current={current === link.id}
         />
       ))
     }
   </nav>
   <Swap
-    href="/contact"
+    href={withBase("/contact")}
     class:list={["btn", "nav-cta", variant === "hero" ? "btn--ghost" : "btn--line"]}
     label="Get in touch"
     current={ctaCurrent}
   >
-    <Arrow slot="before" />
+    <Arrow slot="after" variant="cta" />
   </Swap>
   <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
     <span></span><span></span>

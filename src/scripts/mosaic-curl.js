@@ -16,17 +16,22 @@ uniform vec2 uViewport;
 uniform vec4 uRect;
 uniform vec2 uImageSize;
 uniform vec2 uImageSize2;
+uniform vec2 uFocus;
 uniform float uCurl;
 uniform float uMix;
+uniform float uRadius;
+uniform float uAlpha;
 varying vec2 vScreenUv;
 
 vec2 coverUv(vec2 local, vec2 imageSize) {
   float aspect = uRect.z / max(uRect.w, 1.0);
   float imageAspect = imageSize.x / max(imageSize.y, 1.0);
   if (imageAspect > aspect) {
-    local.x = 0.5 + (local.x - 0.5) * aspect / imageAspect;
+    float window = aspect / imageAspect;
+    local.x = uFocus.x * (1.0 - window) + local.x * window;
   } else {
-    local.y = 0.5 + (local.y - 0.5) * imageAspect / aspect;
+    float window = imageAspect / aspect;
+    local.y = uFocus.y * (1.0 - window) + local.y * window;
   }
   return clamp(local, 0.0, 1.0);
 }
@@ -45,6 +50,14 @@ void main() {
   vec2 localUv = (screenUv * uViewport - uRect.xy) / uRect.zw;
   vec2 edgePx = min(localUv, 1.0 - localUv) * uRect.zw;
   float mask = smoothstep(0.0, 0.75, min(edgePx.x, edgePx.y));
+  if (uRadius > 0.5) {
+    vec2 halfSize = uRect.zw * 0.5;
+    float rad = min(uRadius, min(halfSize.x, halfSize.y));
+    vec2 p = (localUv - 0.5) * uRect.zw;
+    vec2 q = abs(p) - (halfSize - rad);
+    float dist = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - rad;
+    mask *= 1.0 - smoothstep(0.0, 1.25, dist);
+  }
   if (mask <= 0.0) discard;
 
   vec2 disp = texture2D(uDisp, localUv).rg - 0.5;
@@ -52,7 +65,7 @@ void main() {
   vec2 toUv = coverUv(localUv + rot(disp, -2.35619449) * 0.2 * (1.0 - uMix), uImageSize2);
   vec3 color = mix(texture2D(uTexture, fromUv).rgb, texture2D(uTexture2, toUv).rgb, uMix);
 
-  gl_FragColor = vec4(color, mask);
+  gl_FragColor = vec4(color, mask * uAlpha);
 }
 `;
 
@@ -97,7 +110,7 @@ function createRenderer(canvas) {
   gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
 
   const uniforms = Object.fromEntries(
-    ["uViewport", "uRect", "uImageSize", "uImageSize2", "uCurl", "uMix", "uTexture", "uTexture2", "uDisp"].map((name) => [
+    ["uViewport", "uRect", "uImageSize", "uImageSize2", "uFocus", "uCurl", "uMix", "uRadius", "uAlpha", "uTexture", "uTexture2", "uDisp"].map((name) => [
       name,
       gl.getUniformLocation(program, name),
     ]),
@@ -105,6 +118,9 @@ function createRenderer(canvas) {
   gl.uniform1i(uniforms.uTexture, 0);
   gl.uniform1i(uniforms.uTexture2, 1);
   gl.uniform1i(uniforms.uDisp, 2);
+  gl.uniform2f(uniforms.uFocus, 0.5, 0.5);
+  gl.uniform1f(uniforms.uRadius, 0);
+  gl.uniform1f(uniforms.uAlpha, 1);
   gl.clearColor(0, 0, 0, 0);
   gl.enable(gl.BLEND);
   gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -157,6 +173,7 @@ function createRenderer(canvas) {
   let imageSize = [1, 1];
   let imageSize2 = [1, 1];
   let ready = false;
+  const ownTextures = new Map();
 
   function bindState() {
     gl.useProgram(program);
@@ -202,6 +219,23 @@ function createRenderer(canvas) {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
       imageSize2 = [image.naturalWidth || image.width, image.naturalHeight || image.height];
     },
+    uploadOwn(shot, image) {
+      const texture = gl.createTexture();
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+      gl.bindTexture(gl.TEXTURE_2D, textures[0]);
+      const focus = (shot.dataset.focus || "0.5 0.5").split(/\s+/).map(Number);
+      ownTextures.set(shot, {
+        texture,
+        size: [image.naturalWidth || image.width, image.naturalHeight || image.height],
+        focus: [Number.isFinite(focus[0]) ? focus[0] : 0.5, Number.isFinite(focus[1]) ? focus[1] : 0.5],
+      });
+    },
     draw(shots, curl) {
       if (!ready) return;
       const canvasRect = resize();
@@ -214,7 +248,14 @@ function createRenderer(canvas) {
       const scale = canvas.width / Math.max(canvasRect.width, 1);
       const pad = (canvasRect.width * 0.5 * curl) / Math.max(0.05, 1 - curl) + 2;
 
-      for (const shot of shots) {
+      const ordered = [
+        ...shots.filter((shot) => !shot.classList.contains("voices__photo")),
+        ...shots.filter((shot) => shot.classList.contains("voices__photo") && !shot.classList.contains("is-active")),
+        ...shots.filter((shot) => shot.classList.contains("voices__photo") && shot.classList.contains("is-active")),
+      ];
+      for (const shot of ordered) {
+        const alpha = shot.classList.contains("voices__photo") ? parseFloat(getComputedStyle(shot).opacity) || 0 : 1;
+        if (alpha < 0.02) continue;
         const rect = shot.getBoundingClientRect();
         if (rect.bottom < -pad || rect.top > canvasRect.height + pad || rect.width < 2) continue;
         const x = rect.left - canvasRect.left;
@@ -225,12 +266,36 @@ function createRenderer(canvas) {
         const top = Math.min(canvas.height, Math.ceil((canvasRect.height - y + pad) * scale));
         gl.scissor(left, bottom, Math.max(0, right - left), Math.max(0, top - bottom));
         gl.uniform4f(uniforms.uRect, x, y, rect.width, rect.height);
-        gl.uniform1f(uniforms.uCurl, shot.classList.contains("mosaic-shot") ? curl : 0);
-        gl.uniform1f(uniforms.uMix, Number(shot.dataset.mix) || 0);
+        const own = ownTextures.get(shot);
+        const radius = parseFloat(getComputedStyle(shot).borderTopLeftRadius) || 0;
+        gl.uniform1f(uniforms.uRadius, radius);
+        gl.uniform1f(uniforms.uAlpha, alpha);
+        gl.activeTexture(gl.TEXTURE0);
+        if (own) {
+          gl.bindTexture(gl.TEXTURE_2D, own.texture);
+          gl.uniform2f(uniforms.uImageSize, own.size[0], own.size[1]);
+          gl.uniform2f(uniforms.uFocus, own.focus[0], own.focus[1]);
+          gl.uniform1f(uniforms.uCurl, curl);
+          gl.uniform1f(uniforms.uMix, 0);
+        } else if (shot.classList.contains("curl-shot")) {
+          continue;
+        } else {
+          gl.bindTexture(gl.TEXTURE_2D, textures[0]);
+          gl.uniform2f(uniforms.uImageSize, imageSize[0], imageSize[1]);
+          gl.uniform2f(uniforms.uFocus, 0.5, 0.5);
+          gl.uniform1f(uniforms.uCurl, shot.classList.contains("mosaic-shot") ? curl : 0);
+          gl.uniform1f(uniforms.uMix, Number(shot.dataset.mix) || 0);
+        }
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       }
     },
   };
+}
+
+let requestMosaicDraw = () => {};
+
+export function redrawMosaicCurl() {
+  requestMosaicDraw();
 }
 
 export function initMosaicCurl(reduce) {
@@ -251,6 +316,8 @@ export function initMosaicCurl(reduce) {
   }
 
   const shots = [...document.querySelectorAll(".hover-shot")];
+  const curlShots = [...document.querySelectorAll(".curl-shot")];
+  const drawn = [...shots, ...curlShots];
   let frame = 0;
   let curl = 0;
   let speed = 0;
@@ -284,7 +351,7 @@ export function initMosaicCurl(reduce) {
       }
     }
 
-    renderer.draw(shots, 0.16 * curl);
+    renderer.draw(drawn, 0.16 * curl);
     const settling = shots.some((shot) => {
       const mix = Number(shot.dataset.mix) || 0;
       const rect = shot.getBoundingClientRect();
@@ -303,6 +370,8 @@ export function initMosaicCurl(reduce) {
       render(now);
     });
   };
+
+  requestMosaicDraw = requestDraw;
 
   const onScroll = () => {
     const now = performance.now();
@@ -334,6 +403,19 @@ export function initMosaicCurl(reduce) {
   else sample.addEventListener("load", arm, { once: true });
   if (hover?.complete && hover.naturalWidth) armHover();
   else hover?.addEventListener("load", armHover, { once: true });
+
+  curlShots.forEach((shot) => {
+    const image = shot.querySelector("img");
+    if (!image) return;
+    const armShot = () => {
+      if (!image.naturalWidth) return;
+      renderer.uploadOwn(shot, image);
+      shot.classList.add("is-curled");
+      requestDraw();
+    };
+    if (image.complete && image.naturalWidth) armShot();
+    else image.addEventListener("load", armShot, { once: true });
+  });
 
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", requestDraw);

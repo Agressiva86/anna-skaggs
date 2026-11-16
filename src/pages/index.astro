@@ -3,10 +3,53 @@ import Layout from "../layouts/Layout.astro";
 import Nav from "../components/Nav.astro";
 import Arrow from "../components/Arrow.astro";
 import Swap from "../components/Swap.astro";
-import ProjectCard from "../components/ProjectCard.astro";
-import { clients, projects } from "../data/site";
-
-const featured = projects.slice(0, 3);
+import { clients } from "../data/site";
+import { withBase } from "../lib/url";
+const steps = [
+  {
+    n: "1",
+    title: "Strategic Conversation",
+    text: "We begin with a focused conversation to understand the business context, ambition and current friction points.",
+  },
+  {
+    n: "2",
+    title: "Audit or Workshop",
+    text: "Depending on your stage, we start with a diagnostic audit or a strategic workshop to uncover patterns, gaps and opportunities.",
+  },
+  {
+    n: "3",
+    title: "Direction & Priorities",
+    text: "You receive a clearer point of view, sharper priorities and a practical path forward.",
+  },
+  {
+    n: "4",
+    title: "Further Collaboration",
+    text: "From there, collaboration may continue through a sprint, advisory support or a staged strategic process.",
+  },
+];
+const testimonials = [
+  {
+    quote: "While working with Ania, I had the opportunity to work with a very valuable person. Ania is a person focused on development, both her own and that of her employees. She builds relationships with others very well. Everything she does, she does with great attention to the world and others.",
+    name: "Grażyna Krzysztofowicz",
+    role: "HR Manager/Learning&Development/Talent acquisition",
+    image: withBase("/images/about-studies.webp"),
+    focus: "0.5 0.46",
+  },
+  {
+    quote: "Empathic meets Interior Design acumen. In my role as Art Director at IKEA Marketing & Communication I've had the great pleasure to work with Anna on several global assignments. She expertly filled the role of Interior Designer, always customer focused, solution driven and open minded, sharing to-the-point Home furnishing insights. Anna's creative skills impress and I have left any discussion we've had feeling more inspired and optimistic. Anna would be a fantastic asset to any team!",
+    name: "Jaan Vooremaa",
+    role: "Senior Art director at IPEX",
+    image: withBase("/images/about-portrait.webp"),
+    focus: "0.5 0.18",
+  },
+  {
+    quote: "I've had the pleasure of collaborating with Anna Julia on several new IKEA store projects in Southeast Asia and Mexico, and I've consistently been impressed by her dynamic approach and creativity. Anna Julia excels at generating flamboyant ideas and translating them into beautiful home furnishing solutions. What sets Anna Julia apart is not only her creative vision and ability to think outside the box but also her flexibility and openness to feedback. She adjusts her designs based on input, ensuring each space reflects commercial viability without compromising her unique style. I highly recommend Anna Julia to anyone seeking a talented interior designer capable of bringing creative ideas to life. Her skills, creativity, and openness to feedback make her an invaluable asset to any project.",
+    name: "Ana Srdelic",
+    role: "Interior Design Manager, IKEA Southeast Asia&Mexico",
+    image: withBase("/images/about-studio.webp"),
+    focus: "0.5 0.28",
+  },
+];
 const services = [
   {
     title: "Strategic Brand & Business Audit",
@@ -36,27 +79,24 @@ const shots = [
   { start: 5, cols: 5, top: 75, ratio: 1.15, mStart: 1, mCols: 5, mTop: 104, mRatio: 1.15 },
   { start: 12, cols: 4, top: 102, ratio: 1.4, mStart: 4, mCols: 4, mTop: 149, mRatio: 1.25 },
   { start: 1, cols: 5, top: 139, ratio: 0.85, mStart: 1, mCols: 5, mTop: 192, mRatio: 0.8 },
-  { start: 7, cols: 6, top: 177, ratio: 0.72, mStart: 2, mCols: 6, mTop: 240, mRatio: 0.75 },
-  { start: 2, cols: 5, top: 222, ratio: 1.3, mStart: 1, mCols: 4, mTop: 296, mRatio: 1.3 },
 ];
 ---
 
-<Layout title="Anna — Studio" bodyClass="page-home" newsletter>
+<Layout title="Anna — Studio" bodyClass="page-home">
   <section class="hero hero-mosaic" aria-label="Selected work">
     <div class="mosaic-nav">
       <Nav variant="hero" current="home" />
     </div>
-    <h1 class="visually-hidden">Anna</h1>
     <div class="mosaic-field">
       {
         shots.map((shot) => (
           <a
             class="mosaic-shot hover-shot"
-            href="/work"
+            href={withBase("/work")}
             style={`--start:${shot.start};--cols:${shot.cols};--top:${shot.top};--ratio:${shot.ratio};--m-start:${shot.mStart};--m-cols:${shot.mCols};--m-top:${shot.mTop};--m-ratio:${shot.mRatio}`}
           >
-            <img class="mosaic-shot__fill" src="/images/gallery-placeholder.png" alt="" />
-            <img class="mosaic-shot__hover" src="/images/hero-hover.png" alt="" />
+            <img class="mosaic-shot__fill" src={withBase("/images/gallery-placeholder.png")} alt="" />
+            <img class="mosaic-shot__hover" src={withBase("/images/hero-hover.png")} alt="" />
             <span class="shot-title">Lorem ipsum</span>
           </a>
         ))
@@ -64,7 +104,7 @@ const shots = [
     </div>
     <a class="hero-more" href="#content">
       Learn more about us
-      <Arrow />
+      <Arrow variant="cta" />
     </a>
   </section>
 
@@ -74,63 +114,89 @@ const shots = [
         <div class="divider" data-animate="line"></div>
         <div class="grid statement-grid">
           <p class="eyebrow statement-eyebrow" data-animate="rise">Welcome</p>
-          <h2 class="display-4 statement-title" data-animate="rise">Where craft and clear thinking meet to shape digital work that lasts. We design experiences with enough restraint to feel effortless, and enough precision to move a brand forward.</h2>
-          <div class="values" data-stagger>
-            <article class="value" data-animate="rise">
-              <h3>Innovation</h3>
-              <div>
-                <h4>Ideas with a point of view</h4>
-                <p class="muted">Strategy and making stay in the same room. The work should be sharp enough to notice, and calm enough to live with for a long time.</p>
-              </div>
-            </article>
-            <article class="value" data-animate="rise">
-              <h3>Impact</h3>
-              <div>
-                <h4>Built for the years after launch</h4>
-                <p class="muted">A site, a system, or a campaign only counts if it still earns its place later. We design for that longer life, not for a single reveal.</p>
-              </div>
-            </article>
+          <div class="statement-lead">
+            <h1 class="statement-heading" data-animate="rise">Strategic Brand Direction &amp; Foresight for Premium Furniture Brands</h1>
+            <p class="lead" data-animate="rise">Strong furniture brands turn product strength into customer decisions. I am <span class="mark" data-mark>Anna Skaggs<span class="mark__ink" aria-hidden="true">Anna Skaggs</span></span>, a Creative Director helping interior and furniture manufacturers align their assortment, positioning, and customer experience for sustainable growth.</p>
           </div>
-          <div class="frames" data-stagger>
-            {
-              Array.from({ length: 3 }).map(() => (
-                <div class="frame hover-shot" data-animate="reveal">
-                  <img class="mosaic-shot__fill" src="/images/gallery-placeholder.png" alt="" />
-                  <img class="mosaic-shot__hover" src="/images/hero-hover.png" alt="" />
-                  <span class="shot-title">Lorem ipsum</span>
-                  <div class="revealer" />
-                </div>
-              ))
-            }
+          <div class="about">
+            <h2 data-animate="rise">About <span class="mark" data-mark>Anna Skaggs<span class="mark__ink" aria-hidden="true">Anna Skaggs</span></span> – Furniture Brand Strategist</h2>
+            <p data-animate="rise">With over two decades of international experience in interior design, retail concepts, and assortment presentation, I help brands move from product-led thinking to strong market value. My expertise bridges the gap between creative design and commercial strategy for the furniture industry.</p>
+            <Swap href={withBase("/contact")} class="btn btn--line" label="Book a Strategic Call" animate="rise">
+              <Arrow slot="after" variant="cta" />
+            </Swap>
           </div>
-          <p class="curious" data-animate="rise">Still curious?</p>
-          <Swap href="/studio" class="text-link curious-link" label="Read more about us" animate="rise">
-            <Arrow slot="after" />
-          </Swap>
+          <div class="frames">
+            <div class="frame curl-shot" data-focus="0.5 0.46">
+              <img src={withBase("/images/about-studies.webp")} alt="Anna Skaggs standing before a wall of brand studies" />
+            </div>
+            <div class="frame curl-shot" data-focus="0.5 0.18">
+              <img src={withBase("/images/about-portrait.webp")} alt="Anna Skaggs in the studio" />
+            </div>
+            <div class="frame curl-shot" data-focus="0.5 0.28">
+              <img src={withBase("/images/about-studio.webp")} alt="Anna Skaggs beside a canvas" />
+            </div>
+            <Swap href={withBase("/studio")} class="text-link curious-link" label="More about me" animate="rise">
+              <Arrow slot="after" />
+            </Swap>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="section">
-      <div class="wrap">
-        <div class="featured-title clip" data-animate="clip"><h2 class="mega">Featured Work</h2></div>
-        <div class="divider" data-animate="line"></div>
-        <div class="grid featured-head">
-          <h3 class="display-3 featured-lead" data-animate="rise">Each project is a chance to turn a clear idea into something people can use.</h3>
-          <p class="eyebrow featured-eyebrow" data-animate="rise">Projects</p>
-        </div>
-        <div class="featured-layout">
-          <aside class="featured-aside">
-            <div class="featured-aside-inner">
-              <p data-animate="rise">Selected work is the clearest record of how we think, design, and build.</p>
-              <Swap href="/work" class="text-link" label="See all work" animate="rise">
+    <section class="work-pin" aria-labelledby="featured-title">
+      <div class="work-pin__sticky">
+        <div class="work-pin__track">
+          <div class="work-pin__intro">
+            <h2 class="work-pin__title" id="featured-title">Featured<br />Work</h2>
+            <Swap href={withBase("/work")} class="text-link" label="See all work" animate="rise">
+              <Arrow slot="after" />
+            </Swap>
+          </div>
+          {
+            [
+              {
+                title: "Northline",
+                text: "A website that turns a furniture collection into a clearer path from first look to purchase.",
+              },
+              {
+                title: "Fieldwork",
+                text: "An identity that keeps the product story consistent, from the showroom floor to the screen.",
+              },
+              {
+                title: "Harbor",
+                text: "A campaign that aligns the assortment, the story, and the way customers decide.",
+              },
+            ].map((project) => (
+              <a class="work-card project" href={withBase("/project")}>
+                <span class="work-rule"></span>
+                <div class="work-card__body">
+                  <div class="work-card__media curl-shot" data-focus="0.5 0.5">
+                    <img src={withBase("/images/gallery-placeholder.png")} alt={project.title} />
+                    <span class="view-pill">View</span>
+                  </div>
+                  <div class="work-card__copy">
+                    <h3>{project.title}</h3>
+                    <p>{project.text}</p>
+                  </div>
+                </div>
+              </a>
+            ))
+          }
+          <div class="work-card work-card--end">
+            <span class="work-rule"></span>
+            <div class="work-card__body">
+              <p class="work-card__lead">The full collection of brand, product, and campaign work.</p>
+              <Swap href={withBase("/work")} class="text-link" label="See all work" animate="rise">
                 <Arrow slot="after" />
               </Swap>
             </div>
-          </aside>
-          <div class="featured-list">
-            {featured.map((project) => <ProjectCard {...project} />)}
           </div>
+          <section class="work-quote" aria-label="Quote">
+            <blockquote>
+              <p>A strategic perspective shaped by design, retail and foresight.</p>
+              <footer>Anna Skaggs</footer>
+            </blockquote>
+          </section>
         </div>
       </div>
     </section>
@@ -142,7 +208,7 @@ const shots = [
         <ul class="services__list">
           {
             services.map((service) => (
-              <li class="services__item">
+              <li class="services__item" id={service.title.startsWith("Foresight") ? "foresight" : undefined}>
                 <h2 class="services__name">{service.title}</h2>
                 <p class="services__meta">{service.text}</p>
               </li>
@@ -156,16 +222,100 @@ const shots = [
       <div class="wrap">
         <div class="grid clients-head statement-grid">
           <p class="eyebrow clients-eyebrow" data-animate="rise">Clients</p>
-          <h2 class="display-4 statement-title" data-animate="rise">Teams we have partnered with, from early companies to established brands. The marks themselves arrive with the content.</h2>
+          <h2 class="display-4 statement-title" data-animate="rise">My professional experience across companies including</h2>
         </div>
         <div class="clients" data-stagger>
           {
-            clients.map((index) => (
+            clients.map((client) => (
               <div class="client" data-animate="rise">
-                <i>{index}</i><span>Logo</span>
+                <img src={client.src} alt={client.alt} />
               </div>
             ))
           }
+        </div>
+      </div>
+    </section>
+
+    <section class="steps" aria-labelledby="steps-title">
+      <div class="steps__sticky">
+        <div class="steps__surface" aria-hidden="true"></div>
+        <div class="wrap steps__frame">
+          <h2 class="steps__title" id="steps-title">How we work together</h2>
+          <div class="steps__board">
+            <span class="steps__rail" aria-hidden="true"><span class="steps__rail-fill"></span></span>
+            <ol class="steps__list">
+              {
+                steps.map((step) => (
+                  <li class="steps__item">
+                    <span class="steps__num" aria-hidden="true">{step.n}</span>
+                    <div class="steps__copy">
+                      <h3>{step.title}</h3>
+                      <p>{step.text}</p>
+                    </div>
+                  </li>
+                ))
+              }
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="voices" aria-labelledby="voices-title">
+      <div class="voices__layout">
+        <div class="voices__stage">
+        <h2 class="voices__title" id="voices-title">Testimonials from my working journey</h2>
+        <div class="voices__photos">
+          {
+            testimonials.map((item, index) => (
+              <div class:list={["voices__photo", "curl-shot", index === 0 && "is-active"]} data-focus={item.focus}>
+                <img src={item.image} alt="" />
+              </div>
+          ))
+        }
+        </div>
+        </div>
+        <div class="voices__panel">
+          <div class="voices__nav">
+            <button class="voices__back" type="button" aria-label="Previous review">
+              <Arrow />
+              Previous
+            </button>
+            <button class="voices__next" type="button" aria-label="Next review">
+              Next
+              <Arrow />
+            </button>
+          </div>
+          <div class="voices__viewport">
+            <div class="voices__track">
+              {
+                testimonials.map((item, index) => (
+                  <article class:list={["voices__slide", index === 0 && "is-active"]} aria-hidden={index === 0 ? "false" : "true"}>
+                    <blockquote>
+                      <p>“{item.quote}”</p>
+                    </blockquote>
+                    <footer>
+                      <p class="voices__name">{item.name}</p>
+                      <p class="voices__role">{item.role}</p>
+                    </footer>
+                  </article>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section invite" aria-labelledby="invite-title">
+      <div class="wrap">
+        <div class="invite__row">
+          <h2 class="invite__text" id="invite-title" data-animate="rise">
+            If your brand needs stronger direction, clearer value and a more coherent path to growth, let’s talk.
+          </h2>
+          <Swap href={withBase("/contact")} class="btn btn--accent" label="Contact Me" animate="rise">
+            <Arrow slot="after" variant="cta" />
+          </Swap>
         </div>
       </div>
     </section>

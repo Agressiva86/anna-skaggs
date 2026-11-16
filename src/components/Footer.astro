@@ -1,51 +1,49 @@
 ---
+import Arrow from "./Arrow.astro";
 import Swap from "./Swap.astro";
-import { pages } from "../data/site";
-
-interface Props {
-  newsletter?: boolean;
-  emailHref?: string;
-}
-
-const { newsletter = false, emailHref = "/contact" } = Astro.props;
+import { navLinks } from "../data/site";
 ---
 
 <footer class="footer">
   <div class="wrap">
-    {
-      newsletter && (
-        <>
-          <div class="divider" data-animate="line" />
-          <div class="grid footer-news">
-            <h2 data-animate="rise">Subscribe for the occasional studio note</h2>
-            <form class="subscribe" data-form data-animate="rise">
-              <p class="muted">Short notes on the work, sent rarely. This field is a placeholder for now.</p>
-              <div class="subscribe-row">
-                <input type="email" name="email" required placeholder="Email address" aria-label="Email address" />
-                <button class="btn btn--fill" type="submit">Sign up</button>
-              </div>
-              <p class="form-note" hidden>Thank you. The list is not connected yet.</p>
-            </form>
+    <div class="footer-top">
+      <div class="footer-news">
+        <h2 data-animate="rise">Big Ideas, Real Impact.</h2>
+        <p data-animate="rise">
+          I’m currently preparing a step-by-step e-book for premium furniture brands on how to prepare for
+          stronger positioning, clearer value and future-ready growth.
+        </p>
+        <form class="subscribe" data-form data-animate="rise">
+          <div class="subscribe-row">
+            <input type="email" name="email" required placeholder="Email address" aria-label="Email address" />
+            <button class="btn btn--line" type="submit">
+              <span class="swap">
+                <span>Sign up</span>
+                <span aria-hidden="true">Sign up</span>
+              </span>
+              <Arrow variant="cta" />
+            </button>
           </div>
-        </>
-      )
-    }
-    <div class="divider" data-animate="line"></div>
-    <div class="grid footer-base">
-      <p class="sayhi muted">Say hi</p>
-      <div class="together">
-        <p>Let’s work together</p>
-        <Swap href={emailHref} class="text-link" label="hello@anna.studio" />
+          <p class="form-note" hidden>Thank you. The list is not connected yet.</p>
+        </form>
       </div>
-      <a class="footer-logo" href="/">Anna<sup>®</sup></a>
-      <nav class="footer-nav" aria-label="Footer">
-        {
-          pages.map((page) => (
-            <Swap href={page.href} label={`<i>${page.index}</i> ${page.name}`} />
-          ))
-        }
-      </nav>
+      <div class="footer-links" data-animate="rise">
+        <nav class="footer-nav" aria-label="Footer">
+          {navLinks.map((link) => <Swap href={link.href} label={link.label} />)}
+        </nav>
+        <Swap
+          href="https://www.linkedin.com/in/anna-julia-skaggs"
+          class="footer-social"
+          label="LinkedIn"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+      </div>
     </div>
-    <p class="credits">Structure only. Words, photographs, and cases come next.</p>
+    <div class="footer-meta">
+      <p>Creative Future Studio - Design direction, clarity and future insight ©2026</p>
+      <p>Created with love by Spacers</p>
+    </div>
+    <p class="footer-logo" aria-hidden="true">creative future studio</p>
   </div>
 </footer>

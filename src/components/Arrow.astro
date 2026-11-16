@@ -1,3 +1,30 @@
-<svg class="arrow" viewBox="0 0 14 14" width="14" height="14" aria-hidden="true">
-  <path d="M2 7h10M8 3l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
+---
+interface Props {
+  variant?: "line" | "cta";
+}
+
+const { variant = "line" } = Astro.props;
+---
+
+{
+  variant === "cta" ? (
+    <svg class="arrow arrow--cta" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+      <path
+        fill="currentColor"
+        transform="translate(-230 -50)"
+        d="m251.088 69.674-19.176-19.177-1.415 1.415 19.177 19.176h-13.259v2h16.673v-16.673h-2z"
+      />
+    </svg>
+  ) : (
+    <svg class="arrow" viewBox="0 0 14 14" width="14" height="14" aria-hidden="true">
+      <path
+        d="M2 7h10M8 3l4 4-4 4"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  )
+}
