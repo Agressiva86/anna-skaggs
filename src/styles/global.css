@@ -1493,6 +1493,7 @@ a.work-card,
   gap: 22px;
   min-height: 24px;
   margin-bottom: clamp(56px, 7vh, 96px);
+  padding-right: var(--pad);
 }
 
 .voices__nav button {
@@ -2353,20 +2354,28 @@ a.work-card,
 }
 
 .mosaic-nav {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 30;
-  height: 0;
+  background: transparent;
+  transition: background-color 0.35s ease, backdrop-filter 0.35s ease, transform 0.45s var(--ease);
+}
+
+.mosaic-nav.is-hidden {
+  transform: translateY(-110%);
+  pointer-events: none;
+}
+
+.mosaic-nav:has(.nav.is-scrolled) {
+  background: color-mix(in srgb, var(--paper) 64%, transparent);
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-backdrop-filter: blur(28px) saturate(1.4);
 }
 
 .js.is-ready .mosaic-nav .nav {
-  transition: opacity 0.7s ease 0.15s, transform 0.65s var(--ease);
-}
-
-.mosaic-nav .nav--hidden {
-  transform: translateY(-110%);
-  opacity: 0;
-  pointer-events: none;
+  transition: opacity 0.7s ease 0.15s;
 }
 
 .hero-mosaic .nav-link i {
@@ -2374,6 +2383,8 @@ a.work-card,
 }
 
 .hero-mosaic .btn--ghost:not(:hover) {
+  background: var(--paper);
+  color: var(--ink);
   border-color: var(--line);
 }
 

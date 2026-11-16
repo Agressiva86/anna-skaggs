@@ -7,9 +7,13 @@ import { withBase } from "../lib/url";
 interface Props {
   title: string;
   bodyClass?: string;
+  description?: string;
+  image?: string;
 }
 
-const { title, bodyClass } = Astro.props;
+const { title, bodyClass, description, image } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const imageUrl = image ? new URL(withBase(image), Astro.site) : undefined;
 ---
 
 <!doctype html>
@@ -18,6 +22,22 @@ const { title, bodyClass } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    {
+      imageUrl && (
+        <>
+          <meta property="og:image" content={imageUrl} />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:image" content={imageUrl} />
+        </>
+      )
+    }
     <link rel="preload" href={withBase("/fonts/garvox-regular.woff2")} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={withBase("/fonts/host-grotesk.woff2")} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={withBase("/fonts/host-grotesk-ext.woff2")} as="font" type="font/woff2" crossorigin />

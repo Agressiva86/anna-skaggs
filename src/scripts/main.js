@@ -103,6 +103,10 @@ if (parallaxNodes.length) {
   updateParallax();
 }
 
+document.querySelectorAll(".nav-links a[href='#'], .menu a[href='#']").forEach((link) => {
+  link.addEventListener("click", (event) => event.preventDefault());
+});
+
 const toggle = document.querySelector(".menu-toggle");
 if (toggle) {
   toggle.addEventListener("click", () => {
@@ -212,34 +216,32 @@ if (heroMore && hero) {
   window.addEventListener("resize", placeHeroMore);
 }
 
-const header = document.querySelector(".mosaic-nav .nav");
-if (header) {
+const bar = document.querySelector(".mosaic-nav");
+const header = bar?.querySelector(".nav");
+if (bar && header) {
   let lastY = window.scrollY;
   let hidden = false;
 
-  const setHidden = (next) => {
-    if (next === hidden) return;
-    hidden = next;
-    header.classList.toggle("nav--hidden", next);
+  const updateHeader = () => {
+    const y = window.scrollY;
+    const delta = y - lastY;
+    lastY = y;
+    header.classList.toggle("is-scrolled", y > 8);
+    if (document.body.classList.contains("menu-open") || y < 16) {
+      hidden = false;
+    } else if (Math.abs(delta) >= 3) {
+      hidden = delta > 0;
+    }
+    bar.classList.toggle("is-hidden", hidden);
   };
 
-  header.addEventListener("focusin", () => setHidden(false));
+  header.addEventListener("focusin", () => {
+    hidden = false;
+    bar.classList.remove("is-hidden");
+  });
 
-  window.addEventListener(
-    "scroll",
-    () => {
-      const y = window.scrollY;
-      const delta = y - lastY;
-      lastY = y;
-      if (document.body.classList.contains("menu-open") || y < 16) {
-        setHidden(false);
-        return;
-      }
-      if (Math.abs(delta) < 3) return;
-      setHidden(delta > 0);
-    },
-    { passive: true },
-  );
+  updateHeader();
+  window.addEventListener("scroll", updateHeader, { passive: true });
 }
 
 document.querySelectorAll("[data-form]").forEach((form) => {
