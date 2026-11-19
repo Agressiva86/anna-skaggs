@@ -21,14 +21,22 @@ const { variant = "solid", current = "", ctaCurrent = false } = Astro.props;
   </a>
   <nav class="nav-links" aria-label="Primary">
     {
-      navLinks.map((link) => (
-        <Swap
-          href="#"
-          class="nav-link"
-          label={link.label}
-          current={current === link.id}
-        />
-      ))
+      navLinks.map((link) =>
+        link.children ? (
+          <div class="nav-item">
+            <Swap href="#" class="nav-link" label={link.label} current={current === link.id}>
+              <Arrow slot="after" variant="cta" />
+            </Swap>
+            <div class="nav-drop">
+              {link.children.map((child) => (
+                <a class="nav-drop__link" href="#">{child.label}</a>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <Swap href="#" class="nav-link" label={link.label} current={current === link.id} />
+        )
+      )
     }
   </nav>
   <Swap

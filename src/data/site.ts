@@ -10,9 +10,22 @@ export const pages: { id: PageId; href: string; index: string; name: string }[] 
   { id: "contact", href: withBase("/contact"), index: "05", name: "Contact" },
 ];
 
-export const navLinks: { id: string; href: string; label: string }[] = [
+export const navLinks: {
+  id: string;
+  href: string;
+  label: string;
+  children?: { href: string; label: string }[];
+}[] = [
   { id: "home", href: withBase("/"), label: "Home" },
-  { id: "services", href: withBase("/#services"), label: "Services" },
+  {
+    id: "services",
+    href: withBase("/#services"),
+    label: "Services",
+    children: [
+      { href: "#", label: "Services for Furniture Brands" },
+      { href: "#", label: "Services for Design Studio" },
+    ],
+  },
   { id: "studio", href: withBase("/studio"), label: "About" },
   { id: "foresight", href: withBase("/#foresight"), label: "Foresight Lab" },
   { id: "contact", href: withBase("/contact"), label: "Contact" },

@@ -100,9 +100,13 @@ const shots = [
             href={withBase("/work")}
             style={`--start:${shot.start};--cols:${shot.cols};--top:${shot.top};--ratio:${shot.ratio};--m-start:${shot.mStart};--m-cols:${shot.mCols};--m-top:${shot.mTop};--m-ratio:${shot.mRatio}`}
           >
-            <img class="mosaic-shot__fill" src={withBase("/images/gallery-placeholder.png")} alt="" />
-            <img class="mosaic-shot__hover" src={withBase("/images/hero-hover.png")} alt="" />
-            <span class="shot-title">Lorem ipsum</span>
+            <span class="mosaic-shot__window">
+              <img class="mosaic-shot__fill" src={withBase("/images/gallery-placeholder.png")} alt="" />
+            </span>
+            <span class="shot-caption">
+              <span class="shot-title">Lorem ipsum</span>
+              <p class="shot-copy">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            </span>
           </a>
         ))
       }
@@ -126,7 +130,7 @@ const shots = [
           <div class="about">
             <h2 data-animate="rise">About <span class="mark" data-mark>Anna Skaggs<span class="mark__ink" aria-hidden="true">Anna Skaggs</span></span> – Furniture Brand Strategist</h2>
             <p data-animate="rise">With over two decades of international experience in interior design, retail concepts, and assortment presentation, I help brands move from product-led thinking to strong market value. My expertise bridges the gap between creative design and commercial strategy for the furniture industry.</p>
-            <Swap href={withBase("/contact")} class="btn btn--line" label="Book a Strategic Call" animate="rise">
+            <Swap href={withBase("/contact")} class="btn btn--accent" label="Book a Strategic Call" animate="rise">
               <Arrow slot="after" variant="cta" />
             </Swap>
           </div>

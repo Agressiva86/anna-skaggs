@@ -116,8 +116,84 @@ if (toggle) {
   });
 }
 
+function initMosaicStack() {
+  const hero = document.querySelector(".hero-mosaic");
+  if (!hero) return;
+
+  const probe = document.createElement("div");
+  probe.style.cssText = "position:absolute;visibility:hidden;pointer-events:none;";
+  hero.appendChild(probe);
+  const lengthOf = (name) => {
+    probe.style.width = `var(${name})`;
+    return probe.getBoundingClientRect().width;
+  };
+
+  let frame = 0;
+  const layout = () => {
+    const shots = [...hero.querySelectorAll(".mosaic-shot")];
+    if (!shots.length) return;
+    const stack = lengthOf("--stack");
+    const row = lengthOf("--row");
+    const navClear = lengthOf("--nav-clear");
+    const tail = lengthOf("--tail");
+    const items = shots
+      .map((shot) => {
+        const caption = shot.querySelector(".shot-caption");
+        const units = parseFloat(getComputedStyle(shot).getPropertyValue("--top")) || 0;
+        const captionTop = caption ? parseFloat(getComputedStyle(caption).top) || shot.offsetHeight : shot.offsetHeight;
+        const captionHeight = caption ? caption.offsetHeight : 0;
+        return {
+          shot,
+          left: shot.offsetLeft,
+          right: shot.offsetLeft + shot.offsetWidth,
+          height: shot.offsetHeight,
+          designTop: navClear + units * row,
+          captionEnd: Math.max(0, captionTop + captionHeight - shot.offsetHeight),
+        };
+      })
+      .sort((a, b) => a.designTop - b.designTop || a.left - b.left);
+
+    let lowest = 0;
+    for (const item of items) {
+      let top = null;
+      for (const prev of items) {
+        if (prev === item || prev.top == null) continue;
+        const overlap = Math.min(item.right, prev.right) - Math.max(item.left, prev.left);
+        if (overlap <= 1) continue;
+        const minTop = prev.top + prev.height + prev.captionEnd + stack;
+        top = top == null ? minTop : Math.max(top, minTop);
+      }
+      if (top == null) top = item.designTop;
+      item.top = top;
+      item.shot.style.top = `${top}px`;
+      lowest = Math.max(lowest, top + item.height + item.captionEnd);
+    }
+    const minHeight = `${Math.ceil(lowest + tail)}px`;
+    if (hero.style.minHeight !== minHeight) hero.style.minHeight = minHeight;
+    redrawMosaicCurl();
+  };
+
+  const request = () => {
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      layout();
+    });
+  };
+
+  request();
+  window.addEventListener("resize", request);
+  document.fonts?.ready?.then(request);
+  if ("ResizeObserver" in window) {
+    const observer = new ResizeObserver(request);
+    observer.observe(hero);
+    hero.querySelectorAll(".shot-caption").forEach((caption) => observer.observe(caption));
+  }
+}
+
 initSmoothScroll(reduce);
 initMosaicCurl(reduce);
+initMosaicStack();
 initSectionEdgeCurl(".services__surface", reduce);
 initSectionEdgeCurl(".steps__surface", reduce);
 initWorkPin(reduce);
@@ -392,53 +468,105 @@ function initVoices(reduceMotion) {
   const next = root?.querySelector(".voices__next");
   const back = root?.querySelector(".voices__back");
   const viewport = root?.querySelector(".voices__viewport");
-  if (!root || !track || !slides.length) return;
+  if (!root || !track || !slides.length || !viewport) return;
 
   let index = 0;
-  let fadeUntil = 0;
+  let timer = 0;
+  let dragging = false;
+  let paused = false;
+  let pointerId = null;
+  let startX = 0;
+  let startOffset = 0;
+  const autoDelay = 7000;
+
+  const offsetFor = (item) => -slides[item].offsetLeft;
+
+  const arm = () => {
+    window.clearTimeout(timer);
+    if (reduceMotion || paused || dragging) return;
+    timer = window.setTimeout(() => go(index + 1), autoDelay);
+  };
 
   const paintFade = (now) => {
     redrawMosaicCurl();
     if (now < fadeUntil) requestAnimationFrame(paintFade);
   };
+  let fadeUntil = 0;
 
   const go = (nextIndex) => {
-    index = Math.min(slides.length - 1, Math.max(0, nextIndex));
-    track.style.transform = `translate3d(${-slides[index].offsetLeft}px, 0, 0)`;
+    const count = slides.length;
+    index = ((nextIndex % count) + count) % count;
+    track.style.transition = reduceMotion ? "none" : "";
+    track.style.transform = `translate3d(${offsetFor(index)}px, 0, 0)`;
     photos.forEach((photo, item) => photo.classList.toggle("is-active", item === index));
     slides.forEach((slide, item) => {
       const active = item === index;
       slide.classList.toggle("is-active", active);
       slide.setAttribute("aria-hidden", active ? "false" : "true");
     });
-    if (back) back.disabled = index === 0;
-    if (next) next.disabled = index === slides.length - 1;
+    if (back) back.disabled = false;
+    if (next) next.disabled = false;
     fadeUntil = performance.now() + (reduceMotion ? 0 : 860);
     requestAnimationFrame(paintFade);
+    arm();
   };
 
   next?.addEventListener("click", () => go(index + 1));
   back?.addEventListener("click", () => go(index - 1));
 
-  if (viewport) {
-    let startX = 0;
-    let dragging = false;
-    viewport.addEventListener("pointerdown", (event) => {
-      if (event.pointerType === "mouse" && event.button !== 0) return;
-      dragging = true;
-      startX = event.clientX;
-    });
-    viewport.addEventListener("pointerup", (event) => {
-      if (!dragging) return;
-      dragging = false;
-      const delta = event.clientX - startX;
-      if (delta <= -48) go(index + 1);
-      else if (delta >= 48) go(index - 1);
-    });
-    viewport.addEventListener("pointercancel", () => {
-      dragging = false;
-    });
-  }
+  const finishDrag = (event) => {
+    if (!dragging || event.pointerId !== pointerId) return;
+    dragging = false;
+    viewport.classList.remove("is-dragging");
+    try {
+      if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
+    } catch {
+      /* Capture was never taken. */
+    }
+    const delta = event.clientX - startX;
+    pointerId = null;
+    if (delta <= -48) go(index + 1);
+    else if (delta >= 48) go(index - 1);
+    else go(index);
+  };
+
+  viewport.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    dragging = true;
+    pointerId = event.pointerId;
+    startX = event.clientX;
+    startOffset = offsetFor(index);
+    viewport.classList.add("is-dragging");
+    try {
+      viewport.setPointerCapture(event.pointerId);
+    } catch {
+      /* The pointer can disappear before capture. */
+    }
+    track.style.transition = "none";
+    window.clearTimeout(timer);
+  });
+
+  viewport.addEventListener("pointermove", (event) => {
+    if (!dragging || event.pointerId !== pointerId) return;
+    const delta = event.clientX - startX;
+    track.style.transform = `translate3d(${startOffset + delta}px, 0, 0)`;
+  });
+
+  viewport.addEventListener("pointerup", finishDrag);
+  viewport.addEventListener("pointercancel", finishDrag);
+
+  root.addEventListener("pointerenter", () => {
+    paused = true;
+    window.clearTimeout(timer);
+  });
+  root.addEventListener("pointerleave", () => {
+    paused = false;
+    if (!dragging) arm();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) window.clearTimeout(timer);
+    else arm();
+  });
 
   go(0);
   window.addEventListener("resize", () => go(index));

@@ -19,6 +19,7 @@ uniform vec2 uImageSize2;
 uniform vec2 uFocus;
 uniform float uCurl;
 uniform float uMix;
+uniform float uZoom;
 uniform float uRadius;
 uniform float uAlpha;
 varying vec2 vScreenUv;
@@ -60,9 +61,10 @@ void main() {
   }
   if (mask <= 0.0) discard;
 
+  vec2 zoomed = (localUv - 0.5) / max(uZoom, 1.0) + 0.5;
   vec2 disp = texture2D(uDisp, localUv).rg - 0.5;
-  vec2 fromUv = coverUv(localUv + rot(disp, 0.78539816) * 0.2 * uMix, uImageSize);
-  vec2 toUv = coverUv(localUv + rot(disp, -2.35619449) * 0.2 * (1.0 - uMix), uImageSize2);
+  vec2 fromUv = coverUv(zoomed + rot(disp, 0.78539816) * 0.2 * uMix, uImageSize);
+  vec2 toUv = coverUv(zoomed + rot(disp, -2.35619449) * 0.2 * (1.0 - uMix), uImageSize2);
   vec3 color = mix(texture2D(uTexture, fromUv).rgb, texture2D(uTexture2, toUv).rgb, uMix);
 
   gl_FragColor = vec4(color, mask * uAlpha);
@@ -110,7 +112,7 @@ function createRenderer(canvas) {
   gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
 
   const uniforms = Object.fromEntries(
-    ["uViewport", "uRect", "uImageSize", "uImageSize2", "uFocus", "uCurl", "uMix", "uRadius", "uAlpha", "uTexture", "uTexture2", "uDisp"].map((name) => [
+    ["uViewport", "uRect", "uImageSize", "uImageSize2", "uFocus", "uCurl", "uMix", "uZoom", "uRadius", "uAlpha", "uTexture", "uTexture2", "uDisp"].map((name) => [
       name,
       gl.getUniformLocation(program, name),
     ]),
@@ -119,6 +121,7 @@ function createRenderer(canvas) {
   gl.uniform1i(uniforms.uTexture2, 1);
   gl.uniform1i(uniforms.uDisp, 2);
   gl.uniform2f(uniforms.uFocus, 0.5, 0.5);
+  gl.uniform1f(uniforms.uZoom, 1);
   gl.uniform1f(uniforms.uRadius, 0);
   gl.uniform1f(uniforms.uAlpha, 1);
   gl.clearColor(0, 0, 0, 0);
@@ -270,6 +273,8 @@ function createRenderer(canvas) {
         const radius = parseFloat(getComputedStyle(shot).borderTopLeftRadius) || 0;
         gl.uniform1f(uniforms.uRadius, radius);
         gl.uniform1f(uniforms.uAlpha, alpha);
+        const zoom = Number(shot.dataset.zoom);
+        gl.uniform1f(uniforms.uZoom, Number.isFinite(zoom) && zoom > 0 ? zoom : 1);
         gl.activeTexture(gl.TEXTURE0);
         if (own) {
           gl.bindTexture(gl.TEXTURE_2D, own.texture);
@@ -284,7 +289,7 @@ function createRenderer(canvas) {
           gl.uniform2f(uniforms.uImageSize, imageSize[0], imageSize[1]);
           gl.uniform2f(uniforms.uFocus, 0.5, 0.5);
           gl.uniform1f(uniforms.uCurl, shot.classList.contains("mosaic-shot") ? curl : 0);
-          gl.uniform1f(uniforms.uMix, Number(shot.dataset.mix) || 0);
+          gl.uniform1f(uniforms.uMix, 0);
         }
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       }
@@ -301,7 +306,6 @@ export function redrawMosaicCurl() {
 export function initMosaicCurl(reduce) {
   const field = document.querySelector(".mosaic-field");
   const sample = field?.querySelector(".mosaic-shot__fill");
-  const hover = field?.querySelector(".mosaic-shot__hover");
   if (!field || !sample || reduce) return;
 
   const canvas = document.createElement("canvas");
@@ -326,6 +330,7 @@ export function initMosaicCurl(reduce) {
   let lastFrame = performance.now();
   let pointerX = -1;
   let pointerY = -1;
+  const zoomOf = new WeakMap();
 
   const render = (now) => {
     const dt = Math.min(48, Math.max(1, now - lastFrame));
@@ -335,33 +340,24 @@ export function initMosaicCurl(reduce) {
     curl += (target - curl) * (1 - Math.exp(-dt / 180));
 
     const focused = document.activeElement?.closest?.(".hover-shot");
+    let zooming = false;
     for (const shot of shots) {
       const rect = shot.getBoundingClientRect();
       const over =
-        hover?.naturalWidth > 0 &&
-        (shot === focused ||
-          (pointerX >= rect.left && pointerX <= rect.right && pointerY >= rect.top && pointerY <= rect.bottom));
+        shot === focused ||
+        (pointerX >= rect.left && pointerX <= rect.right && pointerY >= rect.top && pointerY <= rect.bottom);
       shot.classList.toggle("is-over", over);
-      const next = over ? 1 : 0;
-      const current = Number(shot.dataset.mix) || 0;
-      const tau = over ? 480 : 620;
-      shot.dataset.mix = String(current + (next - current) * (1 - Math.exp(-dt / tau)));
-      if (!shot.classList.contains("mosaic-shot")) {
-        shot.classList.toggle("is-replaced", (Number(shot.dataset.mix) || 0) > 0.01);
-      }
+      const current = zoomOf.get(shot) ?? 1;
+      const zoomTarget = over ? 1.1 : 1;
+      let next = current + (zoomTarget - current) * (1 - Math.exp(-dt / 380));
+      if (Math.abs(zoomTarget - next) < 0.0008) next = zoomTarget;
+      else zooming = true;
+      zoomOf.set(shot, next);
+      shot.dataset.zoom = String(next);
     }
 
     renderer.draw(drawn, 0.16 * curl);
-    const settling = shots.some((shot) => {
-      const mix = Number(shot.dataset.mix) || 0;
-      const rect = shot.getBoundingClientRect();
-      const over =
-        hover?.naturalWidth > 0 &&
-        (shot === focused ||
-          (pointerX >= rect.left && pointerX <= rect.right && pointerY >= rect.top && pointerY <= rect.bottom));
-      return Math.abs(mix - (over ? 1 : 0)) > 0.012;
-    });
-    if (curl > 0.003 || speed > 8 || settling) requestDraw();
+    if (curl > 0.003 || speed > 8 || zooming) requestDraw();
   };
 
   const requestDraw = () => {
@@ -393,16 +389,8 @@ export function initMosaicCurl(reduce) {
     requestDraw();
   };
 
-  const armHover = () => {
-    if (!hover?.naturalWidth) return;
-    renderer.uploadHover(hover);
-    requestDraw();
-  };
-
   if (sample.complete && sample.naturalWidth) arm();
   else sample.addEventListener("load", arm, { once: true });
-  if (hover?.complete && hover.naturalWidth) armHover();
-  else hover?.addEventListener("load", armHover, { once: true });
 
   curlShots.forEach((shot) => {
     const image = shot.querySelector("img");
