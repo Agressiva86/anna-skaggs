@@ -111,10 +111,6 @@ const shots = [
         ))
       }
     </div>
-    <a class="hero-more" href="#content">
-      Learn more about us
-      <Arrow variant="cta" />
-    </a>
   </section>
 
   <main id="content">
@@ -134,14 +130,14 @@ const shots = [
               <Arrow slot="after" variant="cta" />
             </Swap>
           </div>
-          <div class="frames">
-            <div class="frame curl-shot" data-focus="0.5 0.46">
+          <div class="frames" data-stagger>
+            <div class="frame" data-animate="fade">
               <img src={withBase("/images/about-studies.webp")} alt="Anna Skaggs standing before a wall of brand studies" />
             </div>
-            <div class="frame curl-shot" data-focus="0.5 0.18">
+            <div class="frame" data-animate="fade">
               <img src={withBase("/images/about-portrait.webp")} alt="Anna Skaggs in the studio" />
             </div>
-            <div class="frame curl-shot" data-focus="0.5 0.28">
+            <div class="frame" data-animate="fade">
               <img src={withBase("/images/about-studio.webp")} alt="Anna Skaggs beside a canvas" />
             </div>
             <Swap href={withBase("/studio")} class="text-link curious-link" label="More about me" animate="rise">
@@ -179,7 +175,7 @@ const shots = [
               <a class="work-card project" href={withBase("/project")}>
                 <span class="work-rule"></span>
                 <div class="work-card__body">
-                  <div class="work-card__media curl-shot" data-focus="0.5 0.5">
+                  <div class="work-card__media" data-animate="fade">
                     <img src={withBase("/images/gallery-placeholder.png")} alt={project.title} />
                     <span class="view-pill">View</span>
                   </div>
@@ -277,8 +273,10 @@ const shots = [
         <div class="voices__photos">
           {
             testimonials.map((item, index) => (
-              <div class:list={["voices__photo", "curl-shot", index === 0 && "is-active"]} data-focus={item.focus}>
-                <img src={item.image} alt="" />
+              <div class:list={["voices__photo", index === 0 && "is-active"]}>
+                <div class="voices__photo-media" data-animate="fade">
+                  <img src={item.image} alt="" />
+                </div>
               </div>
           ))
         }

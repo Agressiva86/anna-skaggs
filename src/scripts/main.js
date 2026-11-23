@@ -1,4 +1,3 @@
-import { initMosaicCurl, initSectionEdgeCurl, redrawMosaicCurl } from "./mosaic-curl.js";
 import { initSmoothScroll } from "./smooth-scroll.js";
 
 const root = document.documentElement;
@@ -20,7 +19,16 @@ document.querySelectorAll('[data-animate="fill"]').forEach((line) => {
   });
 });
 
-const animated = document.querySelectorAll('[data-animate]:not([data-animate="line"])');
+const fadeItems = [...document.querySelectorAll('[data-animate="fade"]')];
+const animated = document.querySelectorAll('[data-animate]:not([data-animate="line"]):not([data-animate="fade"])');
+
+function replayFade(target) {
+  target.classList.remove("in");
+  void target.offsetWidth;
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => target.classList.add("in"));
+  });
+}
 
 const lines = reduce ? [] : [...document.querySelectorAll('[data-animate="line"]')];
 const marks = reduce ? [] : [...document.querySelectorAll("[data-mark]")];
@@ -61,6 +69,7 @@ if (lines.length || marks.length) {
 }
 
 if (reduce || !("IntersectionObserver" in window)) {
+  fadeItems.forEach((item) => item.classList.add("in"));
   animated.forEach((item) => item.classList.add("in"));
 } else {
   const observer = new IntersectionObserver(
@@ -71,10 +80,25 @@ if (reduce || !("IntersectionObserver" in window)) {
         observer.unobserve(entry.target);
       });
     },
-    { threshold: 0.22, rootMargin: "0px 0px -8% 0px" }
+    { threshold: 0.22, rootMargin: "0px 0px -8% 0px" },
   );
 
   animated.forEach((item) => observer.observe(item));
+
+  const fadeObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          replayFade(entry.target);
+          return;
+        }
+        entry.target.classList.remove("in");
+      });
+    },
+    { threshold: 0.1, rootMargin: "0px" },
+  );
+
+  fadeItems.forEach((item) => fadeObserver.observe(item));
 }
 
 const parallaxNodes = reduce ? [] : [...document.querySelectorAll("[data-parallax]")];
@@ -170,7 +194,6 @@ function initMosaicStack() {
     }
     const minHeight = `${Math.ceil(lowest + tail)}px`;
     if (hero.style.minHeight !== minHeight) hero.style.minHeight = minHeight;
-    redrawMosaicCurl();
   };
 
   const request = () => {
@@ -192,10 +215,7 @@ function initMosaicStack() {
 }
 
 initSmoothScroll(reduce);
-initMosaicCurl(reduce);
 initMosaicStack();
-initSectionEdgeCurl(".services__surface", reduce);
-initSectionEdgeCurl(".steps__surface", reduce);
 initWorkPin(reduce);
 initSteps(reduce);
 initVoices(reduce);
@@ -278,18 +298,6 @@ if (serviceItems.length && !reduce && "IntersectionObserver" in window) {
   });
 } else {
   serviceItems.forEach((item) => item.classList.add("is-in", "is-active"));
-}
-
-const heroMore = document.querySelector(".hero-more");
-const hero = document.querySelector(".hero-mosaic");
-if (heroMore && hero) {
-  const placeHeroMore = () => {
-    const bottom = hero.getBoundingClientRect().bottom;
-    heroMore.classList.toggle("is-gone", bottom < window.innerHeight - 8);
-  };
-  placeHeroMore();
-  window.addEventListener("scroll", placeHeroMore, { passive: true });
-  window.addEventListener("resize", placeHeroMore);
 }
 
 const bar = document.querySelector(".mosaic-nav");
@@ -487,18 +495,17 @@ function initVoices(reduceMotion) {
     timer = window.setTimeout(() => go(index + 1), autoDelay);
   };
 
-  const paintFade = (now) => {
-    redrawMosaicCurl();
-    if (now < fadeUntil) requestAnimationFrame(paintFade);
-  };
-  let fadeUntil = 0;
-
   const go = (nextIndex) => {
     const count = slides.length;
     index = ((nextIndex % count) + count) % count;
     track.style.transition = reduceMotion ? "none" : "";
     track.style.transform = `translate3d(${offsetFor(index)}px, 0, 0)`;
-    photos.forEach((photo, item) => photo.classList.toggle("is-active", item === index));
+    photos.forEach((photo, item) => {
+      const active = item === index;
+      photo.classList.toggle("is-active", active);
+      const media = photo.querySelector(".voices__photo-media");
+      if (active && media && !reduceMotion) replayFade(media);
+    });
     slides.forEach((slide, item) => {
       const active = item === index;
       slide.classList.toggle("is-active", active);
@@ -506,8 +513,6 @@ function initVoices(reduceMotion) {
     });
     if (back) back.disabled = false;
     if (next) next.disabled = false;
-    fadeUntil = performance.now() + (reduceMotion ? 0 : 860);
-    requestAnimationFrame(paintFade);
     arm();
   };
 
