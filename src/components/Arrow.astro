@@ -1,6 +1,6 @@
 ---
 interface Props {
-  variant?: "line" | "cta";
+  variant?: "line" | "cta" | "drop";
 }
 
 const { variant = "line" } = Astro.props;
@@ -12,6 +12,14 @@ const { variant = "line" } = Astro.props;
       <path
         fill="currentColor"
         transform="translate(-230 -50)"
+        d="m251.088 69.674-19.176-19.177-1.415 1.415 19.177 19.176h-13.259v2h16.673v-16.673h-2z"
+      />
+    </svg>
+  ) : variant === "drop" ? (
+    <svg class="arrow arrow--drop" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+      <path
+        fill="currentColor"
+        transform="translate(-230 -50) rotate(90 241 69.5)"
         d="m251.088 69.674-19.176-19.177-1.415 1.415 19.177 19.176h-13.259v2h16.673v-16.673h-2z"
       />
     </svg>

@@ -1,11 +1,63 @@
 import { initSmoothScroll } from "./smooth-scroll.js";
+import { initHeroIntro, initHeroVideo } from "./hero-intro.js";
 
 const root = document.documentElement;
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const markReady = () => root.classList.add("is-ready");
+if (!root.classList.contains("fonts-ready")) {
+  const revealFonts = () => root.classList.add("fonts-ready");
+  if (document.fonts) {
+    document.fonts.ready.then(revealFonts).catch(revealFonts);
+  } else {
+    revealFonts();
+  }
+  setTimeout(revealFonts, 1500);
+}
+
+const markReady = () => {
+  if (!document.querySelector(".hero-stage")) root.classList.add("is-ready");
+};
 requestAnimationFrame(() => requestAnimationFrame(markReady));
 setTimeout(markReady, 60);
+
+const fitOlhaTitleFill = () => {
+  const fill = document.querySelector(".hero-olha .olha__line--fill");
+  const title = fill?.closest(".olha__title");
+  if (!fill || !title) return;
+
+  const width = title.clientWidth;
+  if (width < 1) return;
+
+  let min = 24;
+  let max = Math.min(360, width * 0.28);
+
+  while (max - min > 0.25) {
+    const mid = (min + max) / 2;
+    fill.style.fontSize = `${mid}px`;
+    if (fill.scrollWidth > width) max = mid;
+    else min = mid;
+  }
+
+  fill.style.fontSize = `${min}px`;
+  title.style.setProperty("--olha-title-fill", `${min}px`);
+};
+
+const scheduleOlhaTitleFit = () => {
+  requestAnimationFrame(fitOlhaTitleFill);
+};
+
+if (document.querySelector(".hero-olha .olha__line--fill")) {
+  const runOlhaTitleFit = () => {
+    scheduleOlhaTitleFit();
+    setTimeout(scheduleOlhaTitleFit, 150);
+  };
+  if (document.fonts) {
+    document.fonts.ready.then(runOlhaTitleFit).catch(runOlhaTitleFit);
+  } else {
+    runOlhaTitleFit();
+  }
+  window.addEventListener("resize", scheduleOlhaTitleFit, { passive: true });
+}
 
 document.querySelectorAll("[data-stagger]").forEach((group) => {
   group.querySelectorAll(":scope > [data-animate]").forEach((item, index) => {
@@ -215,10 +267,204 @@ function initMosaicStack() {
 }
 
 initSmoothScroll(reduce);
+initHeroIntro(reduce);
+initHeroVideo(reduce);
+initInertiaHero(reduce);
+initAutoHideHeroBar(reduce);
+
+function initAutoHideHeroBar(reduceMotion) {
+  const bar = document.querySelector(".hero-bar");
+  if (!bar) return;
+
+  let lastY = window.scrollY;
+  let ticking = false;
+  const revealTop = 64;
+  const deltaMin = 6;
+
+  const update = () => {
+    ticking = false;
+    if (reduceMotion) {
+      bar.classList.remove("is-hidden");
+      lastY = window.scrollY;
+      return;
+    }
+
+    const y = window.scrollY;
+    const dy = y - lastY;
+
+    if (y <= revealTop) {
+      bar.classList.remove("is-hidden");
+    } else if (dy > deltaMin) {
+      bar.classList.add("is-hidden");
+    } else if (dy < -deltaMin) {
+      bar.classList.remove("is-hidden");
+    }
+
+    lastY = y;
+  };
+
+  const request = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  };
+
+  update();
+  window.addEventListener("scroll", request, { passive: true });
+}
+
+function initInertiaHero(reduceMotion) {
+  const pin = document.querySelector("[data-inertia-pin]");
+  const frame = document.querySelector("[data-inertia-video]");
+  const slot = document.querySelector("[data-inertia-slot]");
+  const view = pin?.querySelector(".inertia__view");
+  if (!pin || !frame || !slot || !view) return;
+
+  const topLine = pin.querySelector(".inertia__line--top");
+  const bottomLine = pin.querySelector(".inertia__line--bottom");
+  const captions = pin.querySelector(".inertia__captions");
+  const player = frame.querySelector("[data-inertia-player]");
+  let tick = 0;
+  let introStart = 0;
+  let introLoop = 0;
+  const introMs = 1200;
+
+  const posterImg = frame.querySelector("[data-inertia-poster]");
+
+  const captureVideoPoster = () => {
+    if (!player || !posterImg || !player.videoWidth) return;
+    const paint = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = player.videoWidth;
+      canvas.height = player.videoHeight;
+      canvas.getContext("2d")?.drawImage(player, 0, 0);
+      posterImg.src = canvas.toDataURL("image/jpeg", 0.86);
+    };
+    if (player.currentTime < 0.05) paint();
+    else {
+      player.addEventListener("seeked", paint, { once: true });
+      player.currentTime = 0;
+    }
+  };
+
+  if (player) {
+    const showPlayer = () => {
+      if (player.readyState >= 2) player.classList.add("is-ready");
+    };
+    player.addEventListener("loadeddata", () => {
+      captureVideoPoster();
+      showPlayer();
+    });
+    player.addEventListener("error", () => {
+      console.warn("Hero video failed to load:", player.currentSrc || player.src);
+    }, { once: true });
+    showPlayer();
+  }
+
+  const easeOut = (value) => 1 - (1 - value) ** 3;
+
+  const update = (now = performance.now()) => {
+    tick = 0;
+    const introT = reduceMotion ? 1 : easeOut(Math.min(1, Math.max(0, (now - introStart) / introMs)));
+    const expand = window.innerHeight * 0.7;
+    const hold = window.innerHeight * 0.4;
+    pin.style.height = `${window.innerHeight + expand + hold}px`;
+    const scrolled = Math.max(0, -pin.getBoundingClientRect().top);
+    const grow = reduceMotion ? Math.min(1, scrolled / expand) : Math.min(1, scrolled / expand);
+
+    const viewBox = view.getBoundingClientRect();
+    const home = slot.getBoundingClientRect();
+    const introScale = 0.58 + 0.42 * introT;
+    const restW = home.width * introScale;
+    const restH = home.height * introScale;
+    const width = restW + (viewBox.width - restW) * grow;
+    const height = restH + (viewBox.height - restH) * grow;
+    const fromX = home.left - viewBox.left + home.width / 2;
+    const fromY = home.top - viewBox.top + home.height / 2;
+    const x = fromX + (viewBox.width / 2 - fromX) * grow;
+    const y = fromY + (viewBox.height / 2 - fromY) * grow;
+
+    frame.style.transform = "none";
+    frame.style.width = `${width}px`;
+    frame.style.height = `${height}px`;
+    frame.style.left = `${x - width / 2 - (home.left - viewBox.left)}px`;
+    frame.style.top = `${y - height / 2 - (home.top - viewBox.top)}px`;
+    frame.style.zIndex = grow > 0.04 ? "5" : "1";
+
+    const margin = 36;
+    const hang = window.innerWidth <= 800 ? 0.08 : 0.45;
+    const slide = (1 - introT) * 64;
+    const titleFade = introT * (1 - Math.min(1, grow / 0.55));
+    if (topLine) {
+      const preferred = home.left - topLine.offsetWidth * hang;
+      const shift = Math.max(margin, preferred) - home.left;
+      topLine.style.transform = `translateX(${shift - slide}px)`;
+      topLine.style.opacity = String(titleFade);
+    }
+    if (bottomLine) {
+      const preferred = home.left + bottomLine.offsetWidth * (window.innerWidth <= 800 ? 0.08 : 0.37);
+      const maxLeft = window.innerWidth - margin - bottomLine.offsetWidth;
+      const shift = Math.min(preferred, maxLeft) - home.left;
+      bottomLine.style.transform = `translateX(${shift + slide}px)`;
+      bottomLine.style.opacity = String(titleFade);
+    }
+    if (captions) captions.style.opacity = String(introT * (1 - Math.min(1, grow / 0.4)));
+
+    if (player) {
+      const ready = player.classList.contains("is-ready");
+      const fade = ready ? introT : 0;
+      player.style.opacity = String(fade);
+      if (fade >= 1 || reduceMotion) {
+        player.style.transform = "";
+        player.style.filter = "";
+      } else {
+        const lift = 18 * (1 - fade);
+        const scale = 1 + 0.035 * (1 - fade);
+        const blur = 7 * (1 - fade);
+        player.style.transform = `translateY(${lift}px) scale(${scale})`;
+        player.style.filter = blur > 0.2 ? `blur(${blur}px)` : "none";
+      }
+    }
+    if (posterImg?.src) {
+      posterImg.style.opacity = String(1 - (player?.classList.contains("is-ready") ? introT : 0));
+    }
+
+    if (!reduceMotion && introT < 1) {
+      introLoop = requestAnimationFrame(update);
+    }
+  };
+
+  const request = () => {
+    if (!tick) tick = requestAnimationFrame(update);
+  };
+
+  const begin = () => {
+    introStart = performance.now();
+    cancelAnimationFrame(introLoop);
+    update(introStart);
+  };
+
+  window.addEventListener("scroll", request, { passive: true });
+  window.addEventListener("resize", request);
+  if (root.classList.contains("fonts-ready")) begin();
+  else {
+    const watch = new MutationObserver(() => {
+      if (!root.classList.contains("fonts-ready")) return;
+      watch.disconnect();
+      begin();
+    });
+    watch.observe(root, { attributes: true, attributeFilter: ["class"] });
+    setTimeout(() => {
+      watch.disconnect();
+      if (!introStart) begin();
+    }, 1400);
+  }
+}
 initMosaicStack();
 initWorkPin(reduce);
 initSteps(reduce);
 initVoices(reduce);
+initStatementStats(reduce);
 
 const finePointer = window.matchMedia("(pointer: fine)").matches;
 if (!reduce && finePointer) {
@@ -258,7 +504,7 @@ if (!reduce && finePointer) {
   window.addEventListener("pointermove", (event) => {
     targetX = event.clientX;
     targetY = event.clientY;
-    const under = event.target instanceof Element ? event.target.closest(".mosaic-shot, .frame.hover-shot, .work-card__media, .project-visual") : null;
+    const under = event.target instanceof Element ? event.target.closest(".frame.hover-shot, .work-card__media, .project-visual") : null;
     cursor.classList.toggle("is-view", Boolean(under));
     cursor.classList.add("is-on");
     follow();
@@ -300,32 +546,83 @@ if (serviceItems.length && !reduce && "IntersectionObserver" in window) {
   serviceItems.forEach((item) => item.classList.add("is-in", "is-active"));
 }
 
-const bar = document.querySelector(".mosaic-nav");
-const header = bar?.querySelector(".nav");
-if (bar && header) {
-  let lastY = window.scrollY;
-  let hidden = false;
+const updateLangUi = (key) => {
+  const trigger = document.querySelector("[data-lang-trigger]");
+  const label = key === "pl" ? "Polski" : "English";
+  if (trigger) {
+    trigger.querySelectorAll(".swap > span").forEach((span) => {
+      span.textContent = label;
+    });
+    trigger.setAttribute("aria-label", key === "pl" ? "Język" : "Language");
+  }
+  document.querySelectorAll("[data-lang-option]").forEach((btn) => {
+    const active = btn.getAttribute("data-lang-option") === key;
+    btn.classList.toggle("is-selected", active);
+    btn.setAttribute("aria-selected", String(active));
+  });
+};
 
+const applyLang = (code) => {
+  const key = code === "pl" ? "pl" : "en";
+  document.documentElement.lang = key;
+  document.querySelectorAll("[data-en][data-pl]").forEach((el) => {
+    const text = el.getAttribute(`data-${key}`);
+    if (!text) return;
+    const spans = el.querySelectorAll(":scope > .swap > span");
+    if (spans.length) spans.forEach((span) => {
+      span.textContent = text;
+    });
+    else el.textContent = text;
+  });
+  updateLangUi(key);
+};
+
+let storedLang = "en";
+try {
+  storedLang = localStorage.getItem("lang") || "en";
+} catch {
+  storedLang = "en";
+}
+applyLang(storedLang === "pl" ? "pl" : "en");
+document.querySelectorAll("[data-lang-option]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const next = btn.getAttribute("data-lang-option");
+    applyLang(next);
+    try {
+      localStorage.setItem("lang", next === "pl" ? "pl" : "en");
+    } catch {
+      /* storage unavailable */
+    }
+  });
+});
+
+const header = document.querySelector(".nav");
+const menuWord = header?.querySelector(".nav-menu");
+const compactNav = window.matchMedia("(max-width: 700px)");
+if (header && menuWord) {
   const updateHeader = () => {
     const y = window.scrollY;
-    const delta = y - lastY;
-    lastY = y;
     header.classList.toggle("is-scrolled", y > 8);
-    if (document.body.classList.contains("menu-open") || y < 16) {
-      hidden = false;
-    } else if (Math.abs(delta) >= 3) {
-      hidden = delta > 0;
+    if (compactNav.matches) {
+      header.classList.remove("is-collapsed", "is-menu");
+      return;
     }
-    bar.classList.toggle("is-hidden", hidden);
+    const collapsed = y > 72;
+    if (!collapsed) header.classList.remove("is-menu");
+    header.classList.toggle("is-collapsed", collapsed);
+    if (!header.classList.contains("is-menu")) menuWord.setAttribute("aria-expanded", "false");
   };
 
-  header.addEventListener("focusin", () => {
-    hidden = false;
-    bar.classList.remove("is-hidden");
+  menuWord.addEventListener("click", () => {
+    if (compactNav.matches) return;
+    const open = header.classList.toggle("is-menu");
+    menuWord.setAttribute("aria-expanded", String(open));
+    menuWord.setAttribute("aria-label", open ? "Close menu" : "Open menu");
   });
 
   updateHeader();
   window.addEventListener("scroll", updateHeader, { passive: true });
+  compactNav.addEventListener("change", updateHeader);
 }
 
 document.querySelectorAll("[data-form]").forEach((form) => {
@@ -414,6 +711,68 @@ function initWorkPin(reduceMotion) {
   window.addEventListener("scroll", request, { passive: true });
   window.addEventListener("resize", request);
   mq.addEventListener("change", request);
+}
+
+function initStatementStats(reduceMotion) {
+  const root = document.querySelector("[data-statement-stats]");
+  if (!root) return;
+
+  const tiles = [...root.querySelectorAll(".stat-tile")];
+  const values = tiles.map((tile) => tile.querySelector("[data-stat-count]"));
+  if (!tiles.length) return;
+
+  const clamp01 = (value) => Math.min(1, Math.max(0, value));
+  const smooth = (value) => value * value * (3 - 2 * value);
+
+  const segmentProgress = (progress, index) => {
+    const start = index / 3;
+    return smooth(clamp01((progress - start) / (1 / 3)));
+  };
+
+  const setFinal = () => {
+    root.style.setProperty("--stats-line", "1");
+    for (let i = 0; i < 3; i += 1) root.style.setProperty(`--reveal-${i}`, "1");
+    values.forEach((el) => {
+      if (!el) return;
+      el.textContent = el.getAttribute("data-stat-count") || "0";
+    });
+  };
+
+  let frameId = 0;
+
+  const update = () => {
+    frameId = 0;
+    if (reduceMotion) {
+      setFinal();
+      return;
+    }
+
+    const rect = root.getBoundingClientRect();
+    const view = window.innerHeight || 1;
+    const start = view * 0.84;
+    const end = view * 0.28;
+    const progress = clamp01((start - rect.top) / (start - end));
+
+    root.style.setProperty("--stats-line", progress.toFixed(4));
+
+    tiles.forEach((tile, index) => {
+      const reveal = segmentProgress(progress, index);
+      root.style.setProperty(`--reveal-${index}`, reveal.toFixed(4));
+      const valueEl = values[index];
+      if (!valueEl) return;
+      const target = Number(valueEl.getAttribute("data-stat-count")) || 0;
+      valueEl.textContent = String(Math.round(reveal * target));
+    });
+  };
+
+  const request = () => {
+    if (frameId) return;
+    frameId = requestAnimationFrame(update);
+  };
+
+  update();
+  window.addEventListener("scroll", request, { passive: true });
+  window.addEventListener("resize", request);
 }
 
 function initSteps(reduceMotion) {

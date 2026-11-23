@@ -1,0 +1,22 @@
+---
+interface Props {
+  inline?: boolean;
+  wordmark?: boolean;
+}
+
+const { inline = false, wordmark = false } = Astro.props;
+---
+
+{
+  wordmark ? (
+    <span class="logo__mark logo__mark--wordmark">
+      creative future studio<span class="logo__dot" aria-hidden="true">.</span>
+    </span>
+  ) : (
+    <span class:list={["logo__mark", inline && "logo__mark--inline"]}>
+      <span class="logo__line">creative</span>
+      <span class="logo__line">future</span>
+      <span class="logo__line">studio<span class="logo__dot" aria-hidden="true">.</span></span>
+    </span>
+  )
+}

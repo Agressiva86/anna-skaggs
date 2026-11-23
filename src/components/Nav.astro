@@ -1,5 +1,6 @@
 ---
 import Arrow from "./Arrow.astro";
+import LogoMark from "./LogoMark.astro";
 import Swap from "./Swap.astro";
 import { navLinks, type PageId } from "../data/site";
 import { withBase } from "../lib/url";
@@ -15,39 +16,53 @@ const { variant = "solid", current = "", ctaCurrent = false } = Astro.props;
 
 <div class:list={["nav", variant === "solid" && "nav--solid"]}>
   <a class="logo" href={withBase("/")} aria-label="Creative Future Studio">
-    <span>creative</span>
-    <span>future</span>
-    <span>studio</span>
+    <LogoMark />
   </a>
-  <nav class="nav-links" aria-label="Primary">
-    {
-      navLinks.map((link) =>
-        link.children ? (
-          <div class="nav-item">
-            <Swap href="#" class="nav-link" label={link.label} current={current === link.id}>
-              <Arrow slot="after" variant="cta" />
-            </Swap>
-            <div class="nav-drop">
-              {link.children.map((child) => (
-                <a class="nav-drop__link" href="#">{child.label}</a>
-              ))}
+  <div class="nav-end">
+    <nav class="nav-links" aria-label="Primary">
+      {
+        navLinks.map((link) =>
+          link.children ? (
+            <div class="nav-item nav-item--drop">
+              <Swap href={link.href} class="nav-link" label={link.label} pl={link.pl} current={current === link.id}>
+                <Arrow slot="after" variant="cta" />
+              </Swap>
+              <div class="nav-drop">
+                {link.children.map((child) => (
+                  <a class="nav-drop__link" href={child.href} data-en={child.label} data-pl={child.pl}>{child.label}</a>
+                ))}
+              </div>
             </div>
-          </div>
-        ) : (
-          <Swap href="#" class="nav-link" label={link.label} current={current === link.id} />
+          ) : (
+            <Swap href={link.href} class="nav-link" label={link.label} pl={link.pl} current={current === link.id} />
+          )
         )
-      )
-    }
-  </nav>
-  <Swap
-    href={withBase("/contact")}
-    class:list={["btn", "nav-cta", variant === "hero" ? "btn--ghost" : "btn--line"]}
-    label="Get in touch"
-    current={ctaCurrent}
-  >
-    <Arrow slot="after" variant="cta" />
-  </Swap>
-  <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
-    <span></span><span></span>
-  </button>
+      }
+    </nav>
+    <Swap
+      href={withBase("/contact")}
+      class="btn btn--accent nav-cta"
+      label="Get In Touch"
+      pl="Napisz do nas"
+      current={ctaCurrent}
+    >
+      <Arrow slot="after" variant="cta" />
+    </Swap>
+    <div class="nav-item nav-item--drop nav-item--lang">
+      <button class="nav-link nav-lang" type="button" data-lang-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="Language">
+        <span class="swap">
+          <span>English</span>
+          <span aria-hidden="true">English</span>
+        </span>
+        <Arrow variant="cta" />
+      </button>
+      <div class="nav-drop nav-drop--lang" role="listbox" aria-label="Language">
+        <button class="nav-drop__link" type="button" data-lang-option="pl" role="option" aria-selected="false">Polski</button>
+        <button class="nav-drop__link" type="button" data-lang-option="en" role="option" aria-selected="true">English</button>
+      </div>
+    </div>
+    <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </div>
 </div>

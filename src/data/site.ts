@@ -14,21 +14,22 @@ export const navLinks: {
   id: string;
   href: string;
   label: string;
-  children?: { href: string; label: string }[];
+  pl: string;
+  children?: { href: string; label: string; pl: string }[];
 }[] = [
-  { id: "home", href: withBase("/"), label: "Home" },
+  { id: "home", href: withBase("/"), label: "Home", pl: "Start" },
   {
     id: "services",
     href: withBase("/#services"),
     label: "Services",
+    pl: "Usługi",
     children: [
-      { href: "#", label: "Services for Furniture Brands" },
-      { href: "#", label: "Services for Design Studio" },
+      { href: "#", label: "Services for Furniture Brands", pl: "Usługi dla marek meblowych" },
+      { href: "#", label: "Services for Design Studio", pl: "Usługi dla studiów projektowych" },
     ],
   },
-  { id: "studio", href: withBase("/studio"), label: "About" },
-  { id: "foresight", href: withBase("/#foresight"), label: "Foresight Lab" },
-  { id: "contact", href: withBase("/contact"), label: "Contact" },
+  { id: "studio", href: withBase("/studio"), label: "About", pl: "O nas" },
+  { id: "foresight", href: withBase("/#foresight"), label: "Foresight Lab", pl: "Foresight Lab" },
 ];
 
 export const projects = [

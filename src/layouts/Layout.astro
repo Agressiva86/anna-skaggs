@@ -38,12 +38,38 @@ const imageUrl = image ? new URL(withBase(image), Astro.site) : undefined;
         </>
       )
     }
-    <link rel="preload" href={withBase("/fonts/garvox-regular.woff2")} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={withBase("/fonts/host-grotesk.woff2")} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={withBase("/fonts/host-grotesk-ext.woff2")} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={withBase("/fonts/hubot-sans-latin.woff2")} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={withBase("/fonts/hubot-sans-latin-ext.woff2")} as="font" type="font/woff2" crossorigin />
     <script is:inline>document.documentElement.classList.add("js");</script>
   </head>
   <body class={bodyClass}>
+    {
+      bodyClass === "page-home" ? (
+        <script is:inline>
+          (function () {
+            var root = document.documentElement;
+            var ready = function () {
+              root.classList.add("fonts-ready");
+            };
+            if (!document.fonts) {
+              ready();
+              return;
+            }
+            var loads = Promise.all([
+              document.fonts.load('480 16px "Hubot Sans"'),
+              document.fonts.load('326 16px "Hubot Sans"'),
+            ]);
+            loads.then(ready).catch(ready);
+            document.fonts.ready.then(ready).catch(function () {});
+            setTimeout(ready, 1200);
+          })();
+        </script>
+      ) : (
+        <script is:inline>
+          document.documentElement.classList.add("fonts-ready");
+        </script>
+      )
+    }
     <svg class="svg-defs" aria-hidden="true" focusable="false">
       <filter id="client-mono" color-interpolation-filters="sRGB">
         <feColorMatrix

@@ -1,7 +1,9 @@
 ---
 import Arrow from "./Arrow.astro";
+import LogoMark from "./LogoMark.astro";
 import Swap from "./Swap.astro";
 import { navLinks } from "../data/site";
+import { withBase } from "../lib/url";
 ---
 
 <footer class="footer">
@@ -24,6 +26,15 @@ import { navLinks } from "../data/site";
               <Arrow variant="cta" />
             </button>
           </div>
+          <label class="subscribe-consent">
+            <input type="checkbox" name="marketing_consent" value="1" required />
+            <span class="subscribe-consent__text">
+              I consent to receiving newsletters from ANNA JULIA SKAGGS Creative Future Studio at the email address
+              provided, containing information about products, new releases, promotions, events, and offers related to 3D
+              printing technology. I understand that I can withdraw my consent at any time.
+              <a href={withBase("/privacy")}>Privacy Policy</a>.
+            </span>
+          </label>
           <p class="form-note" hidden>Thank you. The list is not connected yet.</p>
         </form>
       </div>
@@ -41,9 +52,15 @@ import { navLinks } from "../data/site";
       </div>
     </div>
     <div class="footer-meta">
-      <p>Creative Future Studio - Design direction, clarity and future insight ©2026</p>
+      <p class="footer-meta__brand">
+        <LogoMark inline />
+        <span class="footer-meta__sep">–</span>
+        <span class="footer-meta__tagline">Design direction, clarity and future insight ©2026</span>
+      </p>
       <p>Created with love by Spacers</p>
     </div>
-    <p class="footer-logo" aria-hidden="true">creative future studio</p>
+    <p class="footer-logo" aria-hidden="true">
+      <LogoMark wordmark />
+    </p>
   </div>
 </footer>

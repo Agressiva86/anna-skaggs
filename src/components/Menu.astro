@@ -6,9 +6,9 @@ import { navLinks } from "../data/site";
   {
     navLinks.map((link) => (
       <>
-        <a href="#">{link.label}</a>
+        <a href={link.href} data-en={link.label} data-pl={link.pl}>{link.label}</a>
         {link.children?.map((child) => (
-          <a class="menu__sub" href="#">{child.label}</a>
+          <a class="menu__sub" href={child.href} data-en={child.label} data-pl={child.pl}>{child.label}</a>
         ))}
       </>
     ))

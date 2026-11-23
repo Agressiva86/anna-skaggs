@@ -7,9 +7,10 @@ interface Props {
   animate?: string;
   target?: string;
   rel?: string;
+  pl?: string;
 }
 
-const { href, label, class: className, current = false, animate, target, rel } = Astro.props;
+const { href, label, class: className, current = false, animate, target, rel, pl } = Astro.props;
 ---
 
 <a
@@ -17,6 +18,8 @@ const { href, label, class: className, current = false, animate, target, rel } =
   class:list={[className, "swap-link"]}
   aria-current={current ? "page" : undefined}
   data-animate={animate}
+  data-en={pl ? label : undefined}
+  data-pl={pl}
   target={target}
   rel={rel}
 >
