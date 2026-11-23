@@ -3,7 +3,8 @@ import Layout from "../layouts/Layout.astro";
 import Nav from "../components/Nav.astro";
 import Arrow from "../components/Arrow.astro";
 import Swap from "../components/Swap.astro";
-import { clients } from "../data/site";
+import Publications from "../components/Publications.astro";
+import { clients, featuredWork } from "../data/site";
 import { withBase } from "../lib/url";
 const steps = [
   {
@@ -194,25 +195,12 @@ const services = [
             </Swap>
           </div>
           {
-            [
-              {
-                title: "Northline",
-                text: "A website that turns a furniture collection into a clearer path from first look to purchase.",
-              },
-              {
-                title: "Fieldwork",
-                text: "An identity that keeps the product story consistent, from the showroom floor to the screen.",
-              },
-              {
-                title: "Harbor",
-                text: "A campaign that aligns the assortment, the story, and the way customers decide.",
-              },
-            ].map((project) => (
+            featuredWork.map((project) => (
               <a class="work-card project" href={withBase("/project")}>
                 <span class="work-rule"></span>
                 <div class="work-card__body">
                   <div class="work-card__media" data-animate="fade">
-                    <img src={withBase("/images/gallery-placeholder.png")} alt={project.title} />
+                    <img src={project.image} alt={project.imageAlt} />
                     <span class="view-pill">View</span>
                   </div>
                   <div class="work-card__copy">
@@ -362,5 +350,7 @@ const services = [
         </div>
       </div>
     </section>
+
+    <Publications />
   </main>
 </Layout>

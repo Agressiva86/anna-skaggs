@@ -1,0 +1,50 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Subhero from "../../components/Subhero.astro";
+import Arrow from "../../components/Arrow.astro";
+import Swap from "../../components/Swap.astro";
+import { publications, getPublication } from "../../data/publications";
+import { withBase } from "../../lib/url";
+
+export function getStaticPaths() {
+  return publications.map((item) => ({ params: { slug: item.slug } }));
+}
+
+const { slug } = Astro.params;
+const post = getPublication(slug!)!;
+
+const titleWords = post.title.split(/\s+/);
+---
+
+<Layout title={`${post.title} — Anna`} description={post.excerpt}>
+  <Subhero
+    current="news"
+    index="04"
+    title={post.title}
+    words={titleWords}
+  />
+  <main id="content" class="section section--tight">
+    <div class="wrap">
+      <div class="publications-single__visual" data-animate="fade">
+        <img src={post.image} alt={post.imageAlt} loading="eager" decoding="async" />
+      </div>
+      <div class="grid publications-single__head">
+        <div class="publications-single__tags">
+          {post.tags.map((tag) => (
+            <span class="publications__tag">{tag}</span>
+          ))}
+        </div>
+        <p class="publications-single__author muted" data-animate="rise">
+          By {post.author}
+        </p>
+      </div>
+      <h1 class="visually-hidden">{post.title}</h1>
+      <p class="lead publications-single__lead" data-animate="rise">
+        {post.excerpt}
+      </p>
+      <Swap href={withBase("/")} class="text-link" label="Back to home" animate="rise">
+        <Arrow slot="after" />
+      </Swap>
+    </div>
+  </main>
+</Layout>

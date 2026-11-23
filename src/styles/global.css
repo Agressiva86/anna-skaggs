@@ -1647,7 +1647,9 @@ a.work-card,
 
 .project:not(.work-card):hover .view-pill,
 .project:focus-visible .view-pill,
-.work-card__media:hover .view-pill {
+.work-card__media:hover .view-pill,
+.publications__media:hover .view-pill,
+.publications__media:focus-within .view-pill {
   opacity: 1;
   transform: translate(-50%, -50%);
 }
@@ -2152,6 +2154,121 @@ a.work-card,
 
 .invite .btn {
   flex: none;
+}
+
+.publications__heading {
+  margin: 0 0 clamp(36px, 4vw, 64px);
+  text-align: left;
+}
+
+.publications__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 2.5vw, 40px);
+}
+
+.publications__card {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 1.6vw, 20px);
+  color: inherit;
+  text-decoration: none;
+}
+
+.publications__media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--muted);
+}
+
+.publications__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.publications__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.38;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+.publications__tags {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.publications__tag {
+  display: inline-block;
+  padding: 7px 13px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.publications-single__visual {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  margin-bottom: clamp(24px, 3vw, 40px);
+  background: var(--muted);
+}
+
+.publications-single__visual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.publications-single__head {
+  align-items: center;
+  margin-bottom: clamp(20px, 2.5vw, 32px);
+}
+
+.publications-single__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  grid-column: 1 / 8;
+}
+
+.publications-single__author {
+  grid-column: 8 / 13;
+  margin: 0;
+  text-align: right;
+  font-size: 14px;
+}
+
+.publications-single__lead {
+  max-width: 42em;
+  margin: 0 0 clamp(28px, 3vw, 40px);
+}
+
+@media (max-width: 980px) {
+  .publications__grid {
+    grid-template-columns: 1fr;
+    gap: clamp(32px, 6vw, 48px);
+  }
+
+  .publications-single__tags {
+    grid-column: 1 / -1;
+  }
+
+  .publications-single__author {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
 }
 
 .footer {

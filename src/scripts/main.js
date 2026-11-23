@@ -504,8 +504,11 @@ if (!reduce && finePointer) {
   window.addEventListener("pointermove", (event) => {
     targetX = event.clientX;
     targetY = event.clientY;
-    const under = event.target instanceof Element ? event.target.closest(".frame.hover-shot, .work-card__media, .project-visual") : null;
+    const under = event.target instanceof Element
+      ? event.target.closest(".frame.hover-shot, .work-card__media, .project-visual, .publications__media")
+      : null;
     cursor.classList.toggle("is-view", Boolean(under));
+    label.textContent = under?.classList.contains("publications__media") ? "Read" : "View";
     cursor.classList.add("is-on");
     follow();
   }, { passive: true });

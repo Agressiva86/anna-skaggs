@@ -32,6 +32,27 @@ export const navLinks: {
   { id: "foresight", href: withBase("/#foresight"), label: "Foresight Lab", pl: "Foresight Lab" },
 ];
 
+export const featuredWork = [
+  {
+    title: "Northline",
+    text: "A website that turns a furniture collection into a clearer path from first look to purchase.",
+    image: withBase("/images/portfolio-northline.webp"),
+    imageAlt: "Living room with artwork and modular sofa",
+  },
+  {
+    title: "Fieldwork",
+    text: "An identity that keeps the product story consistent, from the showroom floor to the screen.",
+    image: withBase("/images/portfolio-fieldwork.webp"),
+    imageAlt: "Minimal bedroom with wooden platform bed",
+  },
+  {
+    title: "Harbor",
+    text: "A campaign that aligns the assortment, the story, and the way customers decide.",
+    image: withBase("/images/portfolio-harbor.webp"),
+    imageAlt: "Compact studio with built-in wardrobe and daybed",
+  },
+] as const;
+
 export const projects = [
   { title: "Northline", category: "Website", wash: "wash-a" },
   { title: "Fieldwork", category: "Identity", wash: "wash-b" },

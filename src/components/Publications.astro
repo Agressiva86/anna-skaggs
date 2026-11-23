@@ -1,0 +1,36 @@
+---
+import { publications } from "../data/publications";
+import { withBase } from "../lib/url";
+---
+
+<section class="section publications" aria-labelledby="publications-title">
+  <div class="wrap">
+    <h2
+      class="eyebrow publications__heading"
+      id="publications-title"
+      data-animate="rise"
+      data-en="Publications"
+      data-pl="Publikacje"
+    >
+      Publications
+    </h2>
+    <div class="publications__grid" data-stagger>
+      {
+        publications.map((item) => (
+          <a class="publications__card" href={withBase(`/publikacje/${item.slug}`)}>
+            <div class="publications__media" data-animate="fade">
+              <img src={item.image} alt={item.imageAlt} loading="lazy" decoding="async" />
+              <span class="view-pill">Read</span>
+            </div>
+            <h3 class="publications__title">{item.title}</h3>
+            <div class="publications__tags">
+              {item.tags.map((tag) => (
+                <span class="publications__tag">{tag}</span>
+              ))}
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
