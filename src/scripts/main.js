@@ -834,18 +834,6 @@ function initStatementStats(reduceMotion) {
       return;
     }
 
-    if (mqMobile.matches && pin && track) {
-      const travel = Math.max(0, track.scrollWidth - window.innerWidth);
-      const nextHeight = `${window.innerHeight + travel}px`;
-      if (root.style.height !== nextHeight) root.style.height = nextHeight;
-
-      const range = Math.max(1, root.offsetHeight - window.innerHeight);
-      const scrollProgress = clamp01(-root.getBoundingClientRect().top / range);
-      track.style.transform = `translate3d(${-scrollProgress * travel}px, 0, 0)`;
-      applyProgress(scrollProgress);
-      return;
-    }
-
     root.style.height = "";
     if (track) track.style.transform = "";
 

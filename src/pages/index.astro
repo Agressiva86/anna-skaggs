@@ -51,6 +51,23 @@ const testimonials = [
     focus: "0.5 0.28",
   },
 ];
+const statementStats = [
+  {
+    value: 14,
+    labelEn: "countries where I have delivered projects",
+    labelPl: "krajów, w których realizowałam projekt",
+  },
+  {
+    value: 57,
+    labelEn: "companies I have collaborated with",
+    labelPl: "firm, z którymi współpracowałam",
+  },
+  {
+    value: 32,
+    labelEn: "years of experience in the furniture industry",
+    labelPl: "lata doświadczenia w branży meblowej",
+  },
+];
 const services = [
   {
     title: "Strategic Brand & Business Audit",
@@ -122,7 +139,7 @@ const services = [
     <section class="section">
       <div class="wrap">
         <div class="grid statement-grid">
-          <p class="eyebrow statement-eyebrow" data-animate="rise">Welcome</p>
+          <p class="eyebrow statement-eyebrow small-heading" data-animate="rise">Welcome</p>
           <div class="statement-lead">
             <h2 class="statement-heading" data-animate="rise">
               Strategic Brand Direction&nbsp;&amp;<br />
@@ -156,33 +173,21 @@ const services = [
           <div class="statement-stats" data-statement-stats>
             <div class="statement-stats__pin">
               <div class="statement-stats__track">
-                <article class="stat-tile">
-                  <p class="stat-tile__value" data-stat-count="14">0</p>
-                </article>
-                <article class="stat-tile">
-                  <p class="stat-tile__value" data-stat-count="57">0</p>
-                </article>
-                <article class="stat-tile">
-                  <p class="stat-tile__value" data-stat-count="32">0</p>
-                </article>
-                <div class="statement-stats__rule" aria-hidden="true"></div>
-                <p
-                  class="stat-tile__label"
-                  data-en="countries where I have delivered projects"
-                  data-pl="krajów, w których realizowałam projekt"
-                >
-                  krajów, w których realizowałam projekt
-                </p>
-                <p class="stat-tile__label" data-en="companies I have collaborated with" data-pl="firm, z którymi współpracowałam">
-                  firm, z którymi współpracowałam
-                </p>
-                <p
-                  class="stat-tile__label"
-                  data-en="years of experience in the furniture industry"
-                  data-pl="lata doświadczenia w branży meblowej"
-                >
-                  lata doświadczenia w branży meblowej
-                </p>
+                {
+                  statementStats.map((stat) => (
+                    <div class="stat-slide">
+                      <article class="stat-tile">
+                        <p class="stat-tile__value" data-stat-count={stat.value}>
+                          0
+                        </p>
+                      </article>
+                      <div class="statement-stats__rule" aria-hidden="true" />
+                      <p class="stat-tile__label" data-en={stat.labelEn} data-pl={stat.labelPl}>
+                        {stat.labelPl}
+                      </p>
+                    </div>
+                  ))
+                }
               </div>
             </div>
           </div>
@@ -195,8 +200,8 @@ const services = [
         <div class="work-pin__track">
           <div class="work-pin__intro">
             <h2 class="work-pin__title" id="featured-title">Featured<br />Work</h2>
-            <Swap href={withBase("/work")} class="text-link" label="See all work" animate="rise">
-              <Arrow slot="after" />
+            <Swap href={withBase("/work")} class="text-link publications__all" label="See all work" animate="rise">
+              <Arrow slot="after" variant="cta" />
             </Swap>
           </div>
           {
@@ -220,8 +225,8 @@ const services = [
             <span class="work-rule"></span>
             <div class="work-card__body">
               <p class="work-card__lead">The full collection of brand, product, and campaign work.</p>
-              <Swap href={withBase("/work")} class="text-link" label="See all work" animate="rise">
-                <Arrow slot="after" />
+              <Swap href={withBase("/work")} class="text-link publications__all" label="See all work" animate="rise">
+                <Arrow slot="after" variant="cta" />
               </Swap>
             </div>
           </div>
@@ -238,7 +243,7 @@ const services = [
     <section class="section services" id="services" aria-labelledby="services-label">
       <div class="services__surface" aria-hidden="true"></div>
       <div class="wrap">
-        <p class="services__label" id="services-label">Ways I Can Help</p>
+        <p class="services__label small-heading" id="services-label">Ways I Can Help</p>
         <ul class="services__list">
           {
             services.map((service) => (
@@ -255,7 +260,7 @@ const services = [
     <section class="section section--flush">
       <div class="wrap">
         <div class="grid clients-head statement-grid">
-          <p class="eyebrow clients-eyebrow" data-animate="rise">Clients</p>
+          <p class="eyebrow clients-eyebrow small-heading" data-animate="rise">Clients</p>
           <h2 class="statement-heading statement-title" data-animate="rise">My professional experience across companies including</h2>
         </div>
         <div class="clients" role="region" aria-label="Client logos">
@@ -276,7 +281,7 @@ const services = [
       <div class="steps__sticky">
         <div class="steps__surface" aria-hidden="true"></div>
         <div class="wrap steps__frame">
-          <h2 class="steps__title" id="steps-title">How we work together</h2>
+          <h2 class="steps__title small-heading" id="steps-title">How we work together</h2>
           <div class="steps__board">
             <span class="steps__rail" aria-hidden="true"><span class="steps__rail-fill"></span></span>
             <ol class="steps__list">
