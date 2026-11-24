@@ -112,6 +112,7 @@ const services = [
             <p class="inertia__cap">For furniture <strong>brands</strong></p>
             <p class="inertia__cap inertia__cap--right">Turning Assortment into <strong>Brand Value</strong></p>
           </div>
+          <a class="btn btn--accent inertia__cta" href="#services">See how I can help</a>
         </div>
       </div>
     </div>
@@ -153,33 +154,37 @@ const services = [
             </div>
           </div>
           <div class="statement-stats" data-statement-stats>
-            <article class="stat-tile">
-              <p class="stat-tile__value" data-stat-count="14">0</p>
-            </article>
-            <article class="stat-tile">
-              <p class="stat-tile__value" data-stat-count="57">0</p>
-            </article>
-            <article class="stat-tile">
-              <p class="stat-tile__value" data-stat-count="32">0</p>
-            </article>
-            <div class="statement-stats__rule" aria-hidden="true"></div>
-            <p
-              class="stat-tile__label"
-              data-en="countries where I have delivered projects"
-              data-pl="krajów, w których realizowałam projekt"
-            >
-              krajów, w których realizowałam projekt
-            </p>
-            <p class="stat-tile__label" data-en="companies I have collaborated with" data-pl="firm, z którymi współpracowałam">
-              firm, z którymi współpracowałam
-            </p>
-            <p
-              class="stat-tile__label"
-              data-en="years of experience in the furniture industry"
-              data-pl="lata doświadczenia w branży meblowej"
-            >
-              lata doświadczenia w branży meblowej
-            </p>
+            <div class="statement-stats__pin">
+              <div class="statement-stats__track">
+                <article class="stat-tile">
+                  <p class="stat-tile__value" data-stat-count="14">0</p>
+                </article>
+                <article class="stat-tile">
+                  <p class="stat-tile__value" data-stat-count="57">0</p>
+                </article>
+                <article class="stat-tile">
+                  <p class="stat-tile__value" data-stat-count="32">0</p>
+                </article>
+                <div class="statement-stats__rule" aria-hidden="true"></div>
+                <p
+                  class="stat-tile__label"
+                  data-en="countries where I have delivered projects"
+                  data-pl="krajów, w których realizowałam projekt"
+                >
+                  krajów, w których realizowałam projekt
+                </p>
+                <p class="stat-tile__label" data-en="companies I have collaborated with" data-pl="firm, z którymi współpracowałam">
+                  firm, z którymi współpracowałam
+                </p>
+                <p
+                  class="stat-tile__label"
+                  data-en="years of experience in the furniture industry"
+                  data-pl="lata doświadczenia w branży meblowej"
+                >
+                  lata doświadczenia w branży meblowej
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -222,7 +227,7 @@ const services = [
           </div>
           <section class="work-quote" aria-label="Quote">
             <blockquote>
-              <p>A strategic perspective shaped by design, retail and foresight.</p>
+              <p class="statement-heading">A strategic perspective shaped by design, retail and foresight.</p>
               <footer>Anna Skaggs</footer>
             </blockquote>
           </section>
@@ -251,16 +256,18 @@ const services = [
       <div class="wrap">
         <div class="grid clients-head statement-grid">
           <p class="eyebrow clients-eyebrow" data-animate="rise">Clients</p>
-          <h2 class="display-4 statement-title" data-animate="rise">My professional experience across companies including</h2>
+          <h2 class="statement-heading statement-title" data-animate="rise">My professional experience across companies including</h2>
         </div>
-        <div class="clients" data-stagger>
-          {
-            clients.map((client) => (
-              <div class="client" data-animate="rise">
-                <img src={client.src} alt={client.alt} />
-              </div>
-            ))
-          }
+        <div class="clients" role="region" aria-label="Client logos">
+          <div class="clients__track" data-stagger>
+            {
+              clients.map((client) => (
+                <div class="client" data-animate="rise">
+                  <img src={client.src} alt={client.alt} />
+                </div>
+              ))
+            }
+          </div>
         </div>
       </div>
     </section>
@@ -341,7 +348,7 @@ const services = [
     <section class="section invite" aria-labelledby="invite-title">
       <div class="wrap">
         <div class="invite__row">
-          <h2 class="invite__text" id="invite-title" data-animate="rise">
+          <h2 class="invite__text statement-heading" id="invite-title" data-animate="rise">
             If your brand needs stronger direction, clearer value and a more coherent path to growth, let’s talk.
           </h2>
           <Swap href={withBase("/contact")} class="btn btn--accent" label="Contact Me" animate="rise">

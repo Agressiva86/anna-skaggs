@@ -355,6 +355,7 @@ function initInertiaHero(reduceMotion) {
   const topLine = pin.querySelector(".inertia__line--top");
   const bottomLine = pin.querySelector(".inertia__line--bottom");
   const captions = pin.querySelector(".inertia__captions");
+  const cta = pin.querySelector(".inertia__cta");
   const player = frame.querySelector("[data-inertia-player]");
   let tick = 0;
   let introStart = 0;
@@ -394,10 +395,57 @@ function initInertiaHero(reduceMotion) {
   }
 
   const easeOut = (value) => 1 - (1 - value) ** 3;
+  const compactHero = window.matchMedia("(max-width: 980px)");
 
-  const update = (now = performance.now()) => {
-    tick = 0;
-    const introT = reduceMotion ? 1 : easeOut(Math.min(1, Math.max(0, (now - introStart) / introMs)));
+  const clearFrameStyles = () => {
+    frame.style.width = "";
+    frame.style.height = "";
+    frame.style.left = "";
+    frame.style.top = "";
+    frame.style.transform = "";
+    frame.style.zIndex = "";
+  };
+
+  const paintPlayer = (introT) => {
+    if (player) {
+      const ready = player.classList.contains("is-ready");
+      const fade = ready ? introT : 0;
+      player.style.opacity = String(fade);
+      if (fade >= 1 || reduceMotion) {
+        player.style.transform = "";
+        player.style.filter = "";
+      } else {
+        const lift = 18 * (1 - fade);
+        const scale = 1 + 0.035 * (1 - fade);
+        const blur = 7 * (1 - fade);
+        player.style.transform = `translateY(${lift}px) scale(${scale})`;
+        player.style.filter = blur > 0.2 ? `blur(${blur}px)` : "none";
+      }
+    }
+    if (posterImg?.src) {
+      posterImg.style.opacity = String(1 - (player?.classList.contains("is-ready") ? introT : 0));
+    }
+  };
+
+  const updateMobile = (now, introT) => {
+    pin.style.height = "";
+    clearFrameStyles();
+
+    if (topLine) {
+      topLine.style.transform = "";
+      topLine.style.opacity = String(introT);
+    }
+    if (bottomLine) {
+      bottomLine.style.transform = "";
+      bottomLine.style.opacity = String(introT);
+    }
+    if (captions) captions.style.opacity = String(introT);
+    if (cta) cta.style.opacity = String(introT);
+
+    paintPlayer(introT);
+  };
+
+  const updateDesktop = (now, introT) => {
     const expand = window.innerHeight * 0.7;
     const hold = window.innerHeight * 0.4;
     pin.style.height = `${window.innerHeight + expand + hold}px`;
@@ -423,43 +471,29 @@ function initInertiaHero(reduceMotion) {
     frame.style.top = `${y - height / 2 - (home.top - viewBox.top)}px`;
     frame.style.zIndex = grow > 0.04 ? "5" : "1";
 
-    const margin = 36;
-    const hang = window.innerWidth <= 800 ? 0.08 : 0.45;
-    const slide = (1 - introT) * 64;
+    const travel = Math.min(viewBox.width * 0.42, 520);
+    const enterTop = (1 - introT) * travel;
+    const enterBottom = (1 - introT) * -travel;
     const titleFade = introT * (1 - Math.min(1, grow / 0.55));
     if (topLine) {
-      const preferred = home.left - topLine.offsetWidth * hang;
-      const shift = Math.max(margin, preferred) - home.left;
-      topLine.style.transform = `translateX(${shift - slide}px)`;
+      topLine.style.transform = `translateX(${enterTop}px)`;
       topLine.style.opacity = String(titleFade);
     }
     if (bottomLine) {
-      const preferred = home.left + bottomLine.offsetWidth * (window.innerWidth <= 800 ? 0.08 : 0.37);
-      const maxLeft = window.innerWidth - margin - bottomLine.offsetWidth;
-      const shift = Math.min(preferred, maxLeft) - home.left;
-      bottomLine.style.transform = `translateX(${shift + slide}px)`;
+      bottomLine.style.transform = `translateX(${enterBottom}px)`;
       bottomLine.style.opacity = String(titleFade);
     }
     if (captions) captions.style.opacity = String(introT * (1 - Math.min(1, grow / 0.4)));
 
-    if (player) {
-      const ready = player.classList.contains("is-ready");
-      const fade = ready ? introT : 0;
-      player.style.opacity = String(fade);
-      if (fade >= 1 || reduceMotion) {
-        player.style.transform = "";
-        player.style.filter = "";
-      } else {
-        const lift = 18 * (1 - fade);
-        const scale = 1 + 0.035 * (1 - fade);
-        const blur = 7 * (1 - fade);
-        player.style.transform = `translateY(${lift}px) scale(${scale})`;
-        player.style.filter = blur > 0.2 ? `blur(${blur}px)` : "none";
-      }
-    }
-    if (posterImg?.src) {
-      posterImg.style.opacity = String(1 - (player?.classList.contains("is-ready") ? introT : 0));
-    }
+    paintPlayer(introT);
+  };
+
+  const update = (now = performance.now()) => {
+    tick = 0;
+    const introT = reduceMotion ? 1 : easeOut(Math.min(1, Math.max(0, (now - introStart) / introMs)));
+
+    if (compactHero.matches) updateMobile(now, introT);
+    else updateDesktop(now, introT);
 
     if (!reduceMotion && introT < 1) {
       introLoop = requestAnimationFrame(update);
@@ -478,6 +512,7 @@ function initInertiaHero(reduceMotion) {
 
   window.addEventListener("scroll", request, { passive: true });
   window.addEventListener("resize", request);
+  compactHero.addEventListener("change", request);
   if (root.classList.contains("fonts-ready")) begin();
   else {
     const watch = new MutationObserver(() => {
@@ -752,16 +787,31 @@ function initStatementStats(reduceMotion) {
   const root = document.querySelector("[data-statement-stats]");
   if (!root) return;
 
+  const pin = root.querySelector(".statement-stats__pin");
+  const track = root.querySelector(".statement-stats__track");
   const tiles = [...root.querySelectorAll(".stat-tile")];
   const values = tiles.map((tile) => tile.querySelector("[data-stat-count]"));
   if (!tiles.length) return;
 
+  const mqMobile = window.matchMedia("(max-width: 720px)");
   const clamp01 = (value) => Math.min(1, Math.max(0, value));
   const smooth = (value) => value * value * (3 - 2 * value);
 
   const segmentProgress = (progress, index) => {
     const start = index / 3;
     return smooth(clamp01((progress - start) / (1 / 3)));
+  };
+
+  const applyProgress = (progress) => {
+    root.style.setProperty("--stats-line", progress.toFixed(4));
+    tiles.forEach((tile, index) => {
+      const reveal = segmentProgress(progress, index);
+      root.style.setProperty(`--reveal-${index}`, reveal.toFixed(4));
+      const valueEl = values[index];
+      if (!valueEl) return;
+      const target = Number(valueEl.getAttribute("data-stat-count")) || 0;
+      valueEl.textContent = String(Math.round(reveal * target));
+    });
   };
 
   const setFinal = () => {
@@ -778,26 +828,33 @@ function initStatementStats(reduceMotion) {
   const update = () => {
     frameId = 0;
     if (reduceMotion) {
+      root.style.height = "";
+      if (track) track.style.transform = "";
       setFinal();
       return;
     }
+
+    if (mqMobile.matches && pin && track) {
+      const travel = Math.max(0, track.scrollWidth - window.innerWidth);
+      const nextHeight = `${window.innerHeight + travel}px`;
+      if (root.style.height !== nextHeight) root.style.height = nextHeight;
+
+      const range = Math.max(1, root.offsetHeight - window.innerHeight);
+      const scrollProgress = clamp01(-root.getBoundingClientRect().top / range);
+      track.style.transform = `translate3d(${-scrollProgress * travel}px, 0, 0)`;
+      applyProgress(scrollProgress);
+      return;
+    }
+
+    root.style.height = "";
+    if (track) track.style.transform = "";
 
     const rect = root.getBoundingClientRect();
     const view = window.innerHeight || 1;
     const start = view * 0.84;
     const end = view * 0.28;
     const progress = clamp01((start - rect.top) / (start - end));
-
-    root.style.setProperty("--stats-line", progress.toFixed(4));
-
-    tiles.forEach((tile, index) => {
-      const reveal = segmentProgress(progress, index);
-      root.style.setProperty(`--reveal-${index}`, reveal.toFixed(4));
-      const valueEl = values[index];
-      if (!valueEl) return;
-      const target = Number(valueEl.getAttribute("data-stat-count")) || 0;
-      valueEl.textContent = String(Math.round(reveal * target));
-    });
+    applyProgress(progress);
   };
 
   const request = () => {
@@ -808,6 +865,7 @@ function initStatementStats(reduceMotion) {
   update();
   window.addEventListener("scroll", request, { passive: true });
   window.addEventListener("resize", request);
+  mqMobile.addEventListener("change", request);
 }
 
 function initSteps(reduceMotion) {

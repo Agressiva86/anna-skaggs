@@ -29,23 +29,23 @@ import { withBase } from "../lib/url";
         )
       }
     </nav>
-  </div>
-  <div class="menu__foot">
-    <Swap
-      href={withBase("/contact")}
-      class="btn btn--accent menu__cta"
-      label="Get In Touch"
-      pl="Napisz do nas"
-    >
-      <Arrow slot="after" variant="cta" />
-    </Swap>
-    <div class="menu__lang" role="group" aria-label="Language">
-      <button type="button" class="menu__lang-btn" data-lang-option="pl" role="option" aria-selected="false">
-        Polski
-      </button>
-      <button type="button" class="menu__lang-btn" data-lang-option="en" role="option" aria-selected="true">
-        English
-      </button>
+    <div class="menu__foot">
+      <Swap
+        href={withBase("/contact")}
+        class="btn btn--accent menu__cta"
+        label="Get In Touch"
+        pl="Napisz do nas"
+      >
+        <Arrow slot="after" variant="cta" />
+      </Swap>
+      <div class="menu__lang" role="group" aria-label="Language">
+        <button type="button" class="menu__lang-btn" data-lang-option="pl" role="option" aria-selected="false">
+          Polski
+        </button>
+        <button type="button" class="menu__lang-btn" data-lang-option="en" role="option" aria-selected="true">
+          English
+        </button>
+      </div>
     </div>
   </div>
 </div>
