@@ -1,19 +1,32 @@
 ---
+import Arrow from "./Arrow.astro";
+import Swap from "./Swap.astro";
 import { publications } from "../data/publications";
 import { withBase } from "../lib/url";
 ---
 
 <section class="section publications" aria-labelledby="publications-title">
   <div class="wrap">
-    <h2
-      class="eyebrow publications__heading"
-      id="publications-title"
-      data-animate="rise"
-      data-en="Publications"
-      data-pl="Publikacje"
-    >
-      Publications
-    </h2>
+    <div class="publications__head">
+      <h2
+        class="eyebrow publications__heading"
+        id="publications-title"
+        data-animate="rise"
+        data-en="Publications"
+        data-pl="Publikacje"
+      >
+        Publications
+      </h2>
+      <Swap
+        href={withBase("/publikacje")}
+        class="publications__all"
+        label="All publications"
+        pl="Wszystkie publikacje"
+        animate="rise"
+      >
+        <Arrow slot="after" variant="cta" />
+      </Swap>
+    </div>
     <div class="publications__grid" data-stagger>
       {
         publications.map((item) => (

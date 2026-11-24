@@ -184,11 +184,20 @@ document.querySelectorAll(".nav-links a[href='#'], .menu a[href='#']").forEach((
 });
 
 const toggle = document.querySelector(".menu-toggle");
+const closeMenu = () => {
+  document.body.classList.remove("menu-open");
+  if (!toggle) return;
+  toggle.setAttribute("aria-expanded", "false");
+  toggle.setAttribute("aria-label", "Open menu");
+};
 if (toggle) {
   toggle.addEventListener("click", () => {
     const open = document.body.classList.toggle("menu-open");
     toggle.setAttribute("aria-expanded", String(open));
     toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  });
+  document.querySelectorAll(".menu a, .menu__lang-btn").forEach((el) => {
+    el.addEventListener("click", () => closeMenu());
   });
 }
 

@@ -1,16 +1,43 @@
 ---
+import Arrow from "./Arrow.astro";
+import Swap from "./Swap.astro";
 import { navLinks } from "../data/site";
+import { withBase } from "../lib/url";
 ---
 
 <div class="menu">
+  <div class="menu__shell">
   {
     navLinks.map((link) => (
       <>
-        <a href={link.href} data-en={link.label} data-pl={link.pl}>{link.label}</a>
+        <a href={link.href} data-en={link.label} data-pl={link.pl}>
+          {link.label}
+        </a>
         {link.children?.map((child) => (
-          <a class="menu__sub" href={child.href} data-en={child.label} data-pl={child.pl}>{child.label}</a>
+          <a class="menu__sub" href={child.href} data-en={child.label} data-pl={child.pl}>
+            {child.label}
+          </a>
         ))}
       </>
     ))
   }
+  <div class="menu__foot">
+    <Swap
+      href={withBase("/contact")}
+      class="btn btn--accent menu__cta"
+      label="Get In Touch"
+      pl="Napisz do nas"
+    >
+      <Arrow slot="after" variant="cta" />
+    </Swap>
+    <div class="menu__lang" role="group" aria-label="Language">
+      <button type="button" class="menu__lang-btn" data-lang-option="pl" role="option" aria-selected="false">
+        Polski
+      </button>
+      <button type="button" class="menu__lang-btn" data-lang-option="en" role="option" aria-selected="true">
+        English
+      </button>
+    </div>
+  </div>
+  </div>
 </div>
