@@ -40,7 +40,8 @@ import { withBase } from "../lib/url";
       </div>
       <div class="footer-links" data-animate="rise">
         <nav class="footer-nav" aria-label="Footer">
-          {navLinks.map((link) => <Swap href={link.href} label={link.label} />)}
+          {navLinks.map((link) => <Swap href={link.href} label={link.label} pl={link.pl} />)}
+          <Swap href={withBase("/contact")} label="Book a Strategy Call" pl="Umów rozmowę strategiczną" />
         </nav>
         <Swap
           href="https://www.linkedin.com/in/anna-julia-skaggs"

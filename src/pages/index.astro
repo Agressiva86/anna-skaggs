@@ -98,38 +98,43 @@ const services = [
   description="Strategic Brand Direction & Foresight for Premium Furniture Brands"
   image="/images/og.png"
 >
-  <section class="hero hero-inertia" aria-label="Introduction">
+  <section class="hero hero-skaggs" aria-label="Introduction">
     <div class="hero-bar">
       <Nav variant="hero" current="home" />
     </div>
 
-    <div class="inertia__pin" data-inertia-pin>
-      <div class="inertia__view">
-        <div class="inertia__stage">
-          <h1 class="inertia__title">
-            <span class="inertia__line inertia__line--top">Furniture</span>
-            <span class="inertia__line inertia__line--bottom">Strategy</span>
+    <div class="skaggs__pin" data-skaggs-pin>
+      <div class="skaggs__view">
+        <div class="skaggs__stage">
+          <h1 class="skaggs__title">
+            <span class="skaggs__line skaggs__line--top">Furniture</span>
+            <span class="skaggs__line skaggs__line--bottom">Strategy</span>
           </h1>
-          <div class="inertia__slot" data-inertia-slot>
-            <div class="inertia__frame" data-inertia-video>
-              <img alt="" data-inertia-poster />
+          <div class="skaggs__slot" data-skaggs-slot>
+            <div class="skaggs__frame" data-skaggs-video>
+              <img alt="" data-skaggs-poster />
               <video
                 autoplay
                 muted
                 loop
                 playsinline
                 preload="auto"
-                data-inertia-player
+                data-skaggs-player
               >
                 <source src={withBase("/video/hero.mp4")} type="video/mp4" />
               </video>
             </div>
           </div>
-          <div class="inertia__captions">
-            <p class="inertia__cap">For furniture <strong>brands</strong></p>
-            <p class="inertia__cap inertia__cap--right">Turning Assortment into <strong>Brand Value</strong></p>
+          <div class="skaggs__captions">
+            <div class="skaggs__aside">
+              <div class="skaggs__cap-wrap">
+                <p class="skaggs__cap">Growth Strategy for Furniture Manufacturers and Interior Design Brands</p>
+              </div>
+              <Swap href="#services" class="btn btn--accent skaggs__help" label="How Can I help?">
+                <Arrow slot="after" variant="cta" />
+              </Swap>
+            </div>
           </div>
-          <a class="btn btn--accent inertia__cta" href="#services">See how I can help</a>
         </div>
       </div>
     </div>
@@ -356,7 +361,7 @@ const services = [
           <h2 class="invite__text statement-heading" id="invite-title" data-animate="rise">
             If your brand needs stronger direction, clearer value and a more coherent path to growth, let’s talk.
           </h2>
-          <Swap href={withBase("/contact")} class="btn btn--accent" label="Contact Me" animate="rise">
+          <Swap href={withBase("/contact")} class="btn btn--accent" label="Discuss Your Brand Growth" animate="rise">
             <Arrow slot="after" variant="cta" />
           </Swap>
         </div>

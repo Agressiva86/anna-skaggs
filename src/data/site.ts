@@ -15,9 +15,23 @@ export const navLinks: {
   href: string;
   label: string;
   pl: string;
-  children?: { href: string; label: string; pl: string }[];
+  children?: { href: string; label: string; pl: string; external?: boolean }[];
 }[] = [
-  { id: "home", href: withBase("/"), label: "Home", pl: "Start" },
+  {
+    id: "studio",
+    href: withBase("/studio"),
+    label: "About",
+    pl: "O nas",
+    children: [
+      { href: withBase("/publikacje"), label: "Publications", pl: "Publikacje" },
+      {
+        href: "https://www.linkedin.com/in/anna-julia-skaggs",
+        label: "LinkedIn",
+        pl: "LinkedIn",
+        external: true,
+      },
+    ],
+  },
   {
     id: "services",
     href: withBase("/#services"),
@@ -28,7 +42,6 @@ export const navLinks: {
       { href: "#", label: "Services for Design Studio", pl: "Usługi dla studiów projektowych" },
     ],
   },
-  { id: "studio", href: withBase("/studio"), label: "About", pl: "O nas" },
   { id: "foresight", href: withBase("/#foresight"), label: "Foresight Lab", pl: "Foresight Lab" },
 ];
 

@@ -16,7 +16,13 @@ import { withBase } from "../lib/url";
                 <Arrow slot="after" />
               </Swap>
               {link.children.map((child) => (
-                <a class="menu__sub" href={child.href} data-en={child.label} data-pl={child.pl}>
+                <a
+                  class="menu__sub"
+                  href={child.href}
+                  data-en={child.label}
+                  data-pl={child.pl}
+                  {...(child.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                >
                   {child.label}
                 </a>
               ))}
@@ -33,8 +39,8 @@ import { withBase } from "../lib/url";
       <Swap
         href={withBase("/contact")}
         class="btn btn--accent menu__cta"
-        label="Get In Touch"
-        pl="Napisz do nas"
+        label="Book a Strategy Call"
+        pl="Umów rozmowę strategiczną"
       >
         <Arrow slot="after" variant="cta" />
       </Swap>

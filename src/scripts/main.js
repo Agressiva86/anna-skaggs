@@ -301,7 +301,7 @@ function initMosaicStack() {
 initSmoothScroll(reduce);
 initHeroIntro(reduce);
 initHeroVideo(reduce);
-initInertiaHero(reduce);
+initSkaggsHero(reduce);
 initAutoHideHeroBar(reduce);
 
 function initAutoHideHeroBar(reduceMotion) {
@@ -345,24 +345,24 @@ function initAutoHideHeroBar(reduceMotion) {
   window.addEventListener("scroll", request, { passive: true });
 }
 
-function initInertiaHero(reduceMotion) {
-  const pin = document.querySelector("[data-inertia-pin]");
-  const frame = document.querySelector("[data-inertia-video]");
-  const slot = document.querySelector("[data-inertia-slot]");
-  const view = pin?.querySelector(".inertia__view");
+function initSkaggsHero(reduceMotion) {
+  const pin = document.querySelector("[data-skaggs-pin]");
+  const frame = document.querySelector("[data-skaggs-video]");
+  const slot = document.querySelector("[data-skaggs-slot]");
+  const view = pin?.querySelector(".skaggs__view");
   if (!pin || !frame || !slot || !view) return;
 
-  const topLine = pin.querySelector(".inertia__line--top");
-  const bottomLine = pin.querySelector(".inertia__line--bottom");
-  const captions = pin.querySelector(".inertia__captions");
-  const cta = pin.querySelector(".inertia__cta");
-  const player = frame.querySelector("[data-inertia-player]");
+  const topLine = pin.querySelector(".skaggs__line--top");
+  const bottomLine = pin.querySelector(".skaggs__line--bottom");
+  const captions = pin.querySelector(".skaggs__captions");
+  const cta = pin.querySelector(".skaggs__cta");
+  const player = frame.querySelector("[data-skaggs-player]");
   let tick = 0;
   let introStart = 0;
   let introLoop = 0;
   const introMs = 1200;
 
-  const posterImg = frame.querySelector("[data-inertia-poster]");
+  const posterImg = frame.querySelector("[data-skaggs-poster]");
 
   const captureVideoPoster = () => {
     if (!player || !posterImg || !player.videoWidth) return;

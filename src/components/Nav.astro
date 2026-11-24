@@ -29,7 +29,15 @@ const { variant = "solid", current = "", ctaCurrent = false } = Astro.props;
               </Swap>
               <div class="nav-drop">
                 {link.children.map((child) => (
-                  <a class="nav-drop__link" href={child.href} data-en={child.label} data-pl={child.pl}>{child.label}</a>
+                  <a
+                    class="nav-drop__link"
+                    href={child.href}
+                    data-en={child.label}
+                    data-pl={child.pl}
+                    {...(child.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  >
+                    {child.label}
+                  </a>
                 ))}
               </div>
             </div>
@@ -42,8 +50,8 @@ const { variant = "solid", current = "", ctaCurrent = false } = Astro.props;
     <Swap
       href={withBase("/contact")}
       class="btn btn--accent nav-cta"
-      label="Get In Touch"
-      pl="Napisz do nas"
+      label="Book a Strategy Call"
+      pl="Umów rozmowę strategiczną"
       current={ctaCurrent}
     >
       <Arrow slot="after" variant="cta" />
