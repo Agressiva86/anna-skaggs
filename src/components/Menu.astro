@@ -7,20 +7,29 @@ import { withBase } from "../lib/url";
 
 <div class="menu">
   <div class="menu__shell">
-  {
-    navLinks.map((link) => (
-      <>
-        <a href={link.href} data-en={link.label} data-pl={link.pl}>
-          {link.label}
-        </a>
-        {link.children?.map((child) => (
-          <a class="menu__sub" href={child.href} data-en={child.label} data-pl={child.pl}>
-            {child.label}
-          </a>
-        ))}
-      </>
-    ))
-  }
+    <nav class="menu__nav" aria-label="Primary">
+      {
+        navLinks.map((link) =>
+          link.children ? (
+            <div class="menu__group">
+              <Swap href={link.href} class="menu__link" label={link.label} pl={link.pl}>
+                <Arrow slot="after" />
+              </Swap>
+              {link.children.map((child) => (
+                <a class="menu__sub" href={child.href} data-en={child.label} data-pl={child.pl}>
+                  {child.label}
+                </a>
+              ))}
+            </div>
+          ) : (
+            <Swap href={link.href} class="menu__link" label={link.label} pl={link.pl}>
+              <Arrow slot="after" />
+            </Swap>
+          )
+        )
+      }
+    </nav>
+  </div>
   <div class="menu__foot">
     <Swap
       href={withBase("/contact")}
@@ -38,6 +47,5 @@ import { withBase } from "../lib/url";
         English
       </button>
     </div>
-  </div>
   </div>
 </div>

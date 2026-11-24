@@ -184,17 +184,40 @@ document.querySelectorAll(".nav-links a[href='#'], .menu a[href='#']").forEach((
 });
 
 const toggle = document.querySelector(".menu-toggle");
-const closeMenu = () => {
-  document.body.classList.remove("menu-open");
+let menuScrollY = 0;
+
+const updateScrollbarWidth = () => {
+  const scrollbar = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+  document.documentElement.style.setProperty("--scrollbar-width", `${scrollbar}px`);
+};
+
+updateScrollbarWidth();
+window.addEventListener("resize", updateScrollbarWidth, { passive: true });
+
+const setMenuOpen = (open) => {
+  if (open) {
+    menuScrollY = window.scrollY;
+    updateScrollbarWidth();
+    document.body.style.setProperty("--menu-scroll-y", `${menuScrollY}px`);
+    document.body.classList.add("menu-open");
+  } else {
+    document.body.classList.remove("menu-open");
+    document.body.style.removeProperty("--menu-scroll-y");
+    updateScrollbarWidth();
+    window.scrollTo(0, menuScrollY);
+  }
   if (!toggle) return;
-  toggle.setAttribute("aria-expanded", "false");
-  toggle.setAttribute("aria-label", "Open menu");
+  toggle.setAttribute("aria-expanded", String(open));
+  toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+};
+
+const closeMenu = () => {
+  if (!document.body.classList.contains("menu-open")) return;
+  setMenuOpen(false);
 };
 if (toggle) {
   toggle.addEventListener("click", () => {
-    const open = document.body.classList.toggle("menu-open");
-    toggle.setAttribute("aria-expanded", String(open));
-    toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    setMenuOpen(!document.body.classList.contains("menu-open"));
   });
   document.querySelectorAll(".menu a, .menu__lang-btn").forEach((el) => {
     el.addEventListener("click", () => closeMenu());
