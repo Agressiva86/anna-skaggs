@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import StairsPreloader from "../components/StairsPreloader.astro";
 import Nav from "../components/Nav.astro";
 import Arrow from "../components/Arrow.astro";
 import Swap from "../components/Swap.astro";
@@ -98,6 +99,7 @@ const services = [
   description="Strategic Brand Direction & Foresight for Premium Furniture Brands"
   image="/images/og.png"
 >
+  <StairsPreloader />
   <section class="hero hero-skaggs" aria-label="Introduction">
     <div class="hero-bar">
       <Nav variant="hero" current="home" />

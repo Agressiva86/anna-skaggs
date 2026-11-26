@@ -1,5 +1,6 @@
 import { initSmoothScroll } from "./smooth-scroll.js";
 import { initHeroIntro, initHeroVideo } from "./hero-intro.js";
+import { initStairsPreloader } from "./stairs-preloader.js";
 
 const root = document.documentElement;
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -298,6 +299,7 @@ function initMosaicStack() {
   }
 }
 
+initStairsPreloader(reduce);
 initSmoothScroll(reduce);
 initHeroIntro(reduce);
 initHeroVideo(reduce);
@@ -439,7 +441,10 @@ function initSkaggsHero(reduceMotion) {
       bottomLine.style.transform = "";
       bottomLine.style.opacity = String(introT);
     }
-    if (captions) captions.style.opacity = String(introT);
+    if (captions) {
+      captions.style.transform = "";
+      captions.style.opacity = String(introT);
+    }
     if (cta) cta.style.opacity = String(introT);
 
     paintPlayer(introT);
@@ -474,16 +479,22 @@ function initSkaggsHero(reduceMotion) {
     const travel = Math.min(viewBox.width * 0.42, 520);
     const enterTop = (1 - introT) * travel;
     const enterBottom = (1 - introT) * -travel;
-    const titleFade = introT * (1 - Math.min(1, grow / 0.55));
+    const spread = grow <= 0 ? 0 : 1 - (1 - grow) ** 2.1;
+    const exitUp = -spread * Math.max(viewBox.height * 0.62, 320);
+    const exitDown = spread * Math.max(viewBox.height * 0.62, 320);
+    const exitLeft = spread * Math.max(viewBox.width * 0.48, 360);
     if (topLine) {
-      topLine.style.transform = `translateX(${enterTop}px)`;
-      topLine.style.opacity = String(titleFade);
+      topLine.style.transform = `translate(${enterTop}px, ${exitUp}px)`;
+      topLine.style.opacity = String(introT);
     }
     if (bottomLine) {
-      bottomLine.style.transform = `translateX(${enterBottom}px)`;
-      bottomLine.style.opacity = String(titleFade);
+      bottomLine.style.transform = `translate(${enterBottom}px, ${exitDown}px)`;
+      bottomLine.style.opacity = String(introT);
     }
-    if (captions) captions.style.opacity = String(introT * (1 - Math.min(1, grow / 0.4)));
+    if (captions) {
+      captions.style.transform = `translate(calc(-50% - ${exitLeft}px), -50%)`;
+      captions.style.opacity = String(introT);
+    }
 
     paintPlayer(introT);
   };

@@ -1,6 +1,6 @@
 ---
 import Arrow from "./Arrow.astro";
-import LogoMark from "./LogoMark.astro";
+import CfsLogo from "./CfsLogo.astro";
 import Swap from "./Swap.astro";
 import { navLinks, type PageId } from "../data/site";
 import { withBase } from "../lib/url";
@@ -15,8 +15,8 @@ const { variant = "solid", current = "", ctaCurrent = false } = Astro.props;
 ---
 
 <div class:list={["nav", variant === "solid" && "nav--solid"]}>
-  <a class="logo" href={withBase("/")} aria-label="Creative Future Studio">
-    <LogoMark />
+  <a class="logo logo--cfs" href={withBase("/")} aria-label="Creative Future Studio" data-header-logo>
+    <CfsLogo />
   </a>
   <div class="nav-end">
     <nav class="nav-links" aria-label="Primary">

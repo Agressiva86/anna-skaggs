@@ -1,7 +1,8 @@
-Zalando Sans and Zalando Sans SemiExpanded are distributed under the SIL Open Font License.
+Zalando Sans, Zalando Sans SemiExpanded, and Zalando Sans Expanded are distributed under the SIL Open Font License.
 
 Copyright The Zalando Sans Project Authors.
 https://fonts.google.com/specimen/Zalando+Sans
 https://fonts.google.com/specimen/Zalando+Sans+SemiExpanded
+https://fonts.google.com/specimen/Zalando+Sans+Expanded
 
 Self-hosted woff2 subsets (latin, latin-ext) for this site.

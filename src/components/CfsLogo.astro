@@ -1,0 +1,23 @@
+---
+import cfsLogoSvg from "../../public/images/logo/cfs_logo.svg?raw";
+
+/** Ostatnie 3 ścieżki w cfs_logo.svg to sygnet; reszta to napis. */
+const MARK_PATHS = 3;
+
+function prepareLogo(svg: string) {
+  const viewBox = svg.match(/viewBox="[^"]+"/)?.[0] ?? 'viewBox="0 0 314 127"';
+  const paths = [...svg.matchAll(/<path[^>]+\/>/g)].map((match) =>
+    match[0].replace(/\s*fill="[^"]*"/, ""),
+  );
+  if (!paths.length) return svg;
+
+  const type = paths.slice(0, -MARK_PATHS).join("");
+  const mark = paths.slice(-MARK_PATHS).join("");
+
+  return `<svg class="logo__cfs" ${viewBox} fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><g class="logo__cfs-type" fill="currentColor">${type}</g><g class="logo__cfs-mark" fill="currentColor">${mark}</g></svg>`;
+}
+
+const logoHtml = prepareLogo(cfsLogoSvg.trim());
+---
+
+<Fragment set:html={logoHtml} />
